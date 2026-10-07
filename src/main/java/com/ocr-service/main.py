@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify
 import pytesseract
 from PIL import Image
+import os
 import re
 from dateutil import parser as date_parser
 
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# Ruta configurable; en Windows definir TESSERACT_CMD con la ruta a tesseract.exe
+pytesseract.pytesseract.tesseract_cmd = os.getenv("TESSERACT_CMD", "tesseract")
 
 app = Flask(__name__)
 

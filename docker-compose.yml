@@ -1,18 +1,50 @@
-version: "3.8"
-
+# Stack de desarrollo. Requiere un archivo .env (copiar de .env.example).
 services:
   db:
     image: postgres:15
-    container_name: parqueadero_db
-    restart: always
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: parqueadero
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: parking123
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    # Sin "ports": la BD solo es visible dentro de la red de compose.
+    # Para inspeccionarla desde el host, anadir temporalmente: "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ocr:
+    build: ./src/main/java/com/ocr-service
+    restart: unless-stopped
+    # Solo accesible por el backend (red interna).
+
+  backend:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      ocr:
+        condition: service_started
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      OCR_SERVICE_URL: http://ocr:5000
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SPRING_SECURITY_PASSWORD: ${SPRING_SECURITY_PASSWORD}
+      UPLOAD_DIR: /app/uploads
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    volumes:
+      - uploads:/app/uploads
 
 volumes:
   pgdata:
+  uploads:
