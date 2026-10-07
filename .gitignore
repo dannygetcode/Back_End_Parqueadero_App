@@ -33,3 +33,8 @@ build/
 .vscode/
 # Added by code-review-graph
 .code-review-graph/
+
+# Secretos locales
+.env
+.env.*
+!.env.example
