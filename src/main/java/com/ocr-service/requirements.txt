@@ -1,0 +1,5 @@
+flask>=3.0,<4
+pytesseract>=0.3.10
+pillow>=10
+python-dateutil>=2.9
+gunicorn>=22

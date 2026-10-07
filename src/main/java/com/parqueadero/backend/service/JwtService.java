@@ -2,20 +2,24 @@ package com.parqueadero.backend.service;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
-    // Clave secreta de al menos 256 bits (32 bytes). Guárdala idealmente en env
-    // vars.
-    private static final String SECRET = "ParkingAeremus231!PathProjectEngineer!";
     private static final long EXPIRATION_MS = 1000 * 60 * 60 * 4; // 4 horas
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final Key key;
+
+    // El secreto viene de la propiedad jwt.secret (variable de entorno JWT_SECRET), minimo 32 bytes.
+    public JwtService(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String generarToken(String subject) {
         Date now = new Date();
