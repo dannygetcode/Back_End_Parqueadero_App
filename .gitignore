@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+# Added by code-review-graph
+.code-review-graph/
