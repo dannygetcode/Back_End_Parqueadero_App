@@ -81,7 +81,7 @@ def ocr():
     # Carga la imagen y obtiene texto crudo
     img = Image.open(request.files['image'].stream)
     texto = pytesseract.image_to_string(img)
-    print("=== TEXTO OCR ===\n", texto)  # Debug en consola
+    # No se registra el texto extraído: es un comprobante con datos personales y financieros.
 
     # Procesa solo fecha y valor
     datos = procesar_lineas(texto)
