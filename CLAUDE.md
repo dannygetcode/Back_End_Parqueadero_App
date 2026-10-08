@@ -40,7 +40,7 @@ Roles: P público, A ADMIN (JWT), U USUARIO (JWT, solo lo suyo), S SISTEMA (cabe
 - Resuelto en Fase 1: credenciales fuera del código (todo por variables de entorno; admin en tabla `administrador` con BCrypt), autorización por rol en todas las rutas, `server.address` por defecto `127.0.0.1`, `show-sql=false`, tests de integración con Testcontainers, `uploads/` fuera de git.
 - CSRF desactivado a propósito (API stateless con Bearer y sin cookies); la protección irá en el BFF de Next.js.
 - `mobile/` y `frontend/` todavía usan el contrato viejo y están rotos contra este backend hasta su fase (ver `docs/cambios-de-contrato-fase-1.md`).
-- Sin revocación de JWT (mitigado: las operaciones sensibles releen el usuario) ni refresh tokens. Bloqueo por cuenta, no por IP.
+- Revocación de JWT por versión de credenciales (`credenciales_cambiadas_en`: cambio de PIN, activación, código nuevo, baja, suspensión; precisión de segundos); sin lista de tokens ni refresh tokens. Bloqueo por cuenta más límite por IP en logins y activación.
 - El job de vencimiento y el anti-rebote asumen una sola instancia (con réplicas haría falta ShedLock).
 - Los comprobantes están en disco local (volumen `uploads`): hay que respaldarlo junto con el `pg_dump`.
 

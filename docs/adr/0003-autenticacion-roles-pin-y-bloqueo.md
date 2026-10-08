@@ -34,9 +34,11 @@ desde variables de entorno; Next.js usará BFF con cookie httpOnly en una fase p
   el id del usuario autenticado desde el `SecurityContext`, nunca desde un parámetro (`userId` deja de venir en el
   request de pagos).
 - La respuesta de login pasa a ser JSON `{ "token", "rol", "expiraEn" }` también para el admin (hoy es texto plano).
-- Revocación: no hay lista negra. Mitigación: las operaciones sensibles del usuario (abrir puerta, subir pago)
-  releen el usuario en BD y rechazan si está SUSPENDIDO, dado de baja o bloqueado. Un token robado vale como
-  máximo 12 h.
+- Revocación: no hay lista negra sino una versión de credenciales (`credenciales_cambiadas_en`, migración V3). El
+  filtro rechaza (401) un JWT con `iat` anterior (a precisión de segundos) a ese instante. Se actualiza al cambiar el
+  PIN, activar, regenerar el código, dar de baja y suspender. Tras cambiar el PIN hay que iniciar sesión de nuevo.
+  Además, las operaciones sensibles del usuario releen el usuario en BD y rechazan si está SUSPENDIDO, dado de baja
+  o bloqueado.
 
 **Ciclo de vida del usuario**:
 

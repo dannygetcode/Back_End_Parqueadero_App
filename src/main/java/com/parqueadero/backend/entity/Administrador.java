@@ -33,6 +33,10 @@ public class Administrador {
     @Column(name = "bloqueado_hasta")
     private Instant bloqueadoHasta;
 
+    /** Versión de credenciales (V3): los JWT emitidos antes de este instante se rechazan. */
+    @Column(name = "credenciales_cambiadas_en")
+    private Instant credencialesCambiadasEn;
+
     @CreationTimestamp
     @Column(name = "creado_en", nullable = false, updatable = false)
     private Instant creadoEn;
