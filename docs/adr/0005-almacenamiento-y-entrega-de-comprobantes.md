@@ -33,6 +33,10 @@ Volumen: 7 usuarios, un comprobante al mes cada uno, de unos 100 KB a 2 MB. Meno
 5. **OCR no bloqueante para el negocio**: se llama de forma síncrona (timeout de 10 s en `RestTemplate`). Si falla
    o no extrae nada, el pago se crea igual en `PENDIENTE` con `monto_ocr` y `fecha_pago_ocr` en null, y
    `ocr_estado = FALLIDO`. El admin aprueba mirando la imagen. El texto extraído se guarda en `ocr_datos jsonb`.
+   La validación del archivo y la llamada al OCR se hacen **fuera de la transacción** (no se retiene una conexión de
+   BD durante el timeout); la transacción solo envuelve el cálculo del periodo, el guardado del archivo y el INSERT.
+   Dos subidas simultáneas del mismo usuario pueden pasar la comprobación previa de "pago pendiente": el índice único
+   parcial `uq_pago_pendiente_usuario` rechaza la segunda, se responde 409 y su archivo se borra.
 6. **Entrega autenticada**: se elimina el *resource handler* público `/uploads/**` y su `permitAll`. Nuevo
    `GET /api/pagos/{id}/comprobante` que transmite el archivo con su `Content-Type` y
    `Cache-Control: private, no-store`. Lo puede ver el ADMIN o el USUARIO dueño del pago.
