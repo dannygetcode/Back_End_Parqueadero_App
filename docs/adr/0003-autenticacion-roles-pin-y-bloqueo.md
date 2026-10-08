@@ -26,7 +26,7 @@ desde variables de entorno; Next.js usará BFF con cookie httpOnly en una fase p
 
 **Token JWT** (jjwt 0.11.5, HS256, secreto `JWT_SECRET` >= 32 bytes, ya existe):
 
-- Claims: `sub` = id del usuario como texto; para el admin, `sub = "admin"` (no tiene fila en BD); `rol` =
+- Claims: `sub` = id como texto (de `usuario` o de `administrador`); `rol` =
   `ADMIN` | `USUARIO`; `iat`, `exp`.
 - Expiración configurable: `jwt.expiracion.admin` = 4 h, `jwt.expiracion.usuario` = 12 h. Sin refresh tokens en
   Fase 1: el usuario vuelve a meter el PIN.
@@ -61,14 +61,18 @@ desde variables de entorno; Next.js usará BFF con cookie httpOnly en una fase p
 - Un login correcto pone el contador en 0.
 - Mensaje de error genérico ("teléfono o PIN incorrectos") para no revelar qué teléfonos existen.
 - Parámetros en propiedades: `seguridad.pin.max-intentos=5`, `seguridad.pin.bloqueo-minutos=15`.
-- Admin: el mismo límite pero en memoria (un solo admin, una sola instancia). Se pierde al reiniciar; aceptable.
+- Admin: el mismo límite, persistido en su fila de `administrador` (sobrevive a reinicios).
 
-**Admin**: `ADMIN_USERNAME` y `ADMIN_PASSWORD_HASH` (hash BCrypt) por variables de entorno. Se elimina
-`ADMIN_PASSWORD` en claro y las propiedades `spring.security.user.*`, que no se usan con la cadena de filtros actual.
+**Admin** (actualizado en la implementación, resolución del orquestador): tabla `administrador` (`usuario` único,
+`password_hash` BCrypt, `intentos_fallidos`, `bloqueado_hasta`) en V1. Al arrancar, si la tabla está vacía, se crea
+un admin con `ADMIN_USERNAME`/`ADMIN_PASSWORD` guardando solo el hash; si ya hay uno, las variables se ignoran; si está
+vacía y faltan, la aplicación no arranca. No se usa `ADMIN_PASSWORD_HASH`. Se eliminan las propiedades
+`spring.security.user.*` (y `SPRING_SECURITY_*`), que no se usan con la cadena de filtros actual.
 
 **Autorización**: reglas por ruta en `SecurityConfig` (tabla de endpoints en `fase-1-modelo.md`) más comprobación
 de propiedad en el servicio ("el pago `{id}` es del usuario autenticado o el que llama es ADMIN"). Se quita todo
-`permitAll` salvo `/api/auth/login`, `/api/auth/activar`, `/api/admin/login` y `/api/ping`. Se elimina el
+`permitAll` salvo `/api/auth/login`, `/api/auth/activar`, `/api/admin/login`, `/api/ping` y
+`/api/legal/aviso-privacidad` (texto del aviso cuya versión se guarda con el consentimiento). Se elimina el
 `@CrossOrigin(origins = "*")` de `CamaraController`; CORS se configura solo en `SecurityConfig`, con orígenes desde
 una variable de entorno (`CORS_ORIGENES`), sin IPs en el código.
 
@@ -82,7 +86,8 @@ desactivado en el backend (la protección CSRF va en el BFF, con `SameSite=Stric
   un admin y 7 usuarios. Descartado.
 - **Sesiones con cookie en el backend**: la app Android funciona mejor con bearer token. Descartado.
 - **Refresh tokens**: añaden tabla, rotación y revocación. Se reconsidera si 12 h resulta incómodo en la app.
-- **Admin en tabla `administrador`**: solo hay uno; se hará cuando haya más de uno o roles por sede.
+- **Admin solo por variables de entorno con `ADMIN_PASSWORD_HASH`** (propuesta inicial de este ADR): sustituida por
+  la tabla `administrador`, que persiste el bloqueo, da un `sub` numérico homogéneo y admite más admins sin cambios.
 - **Bloqueo por IP con Bucket4j/Redis**: no hace falta con 7 usuarios. El bloqueo por cuenta basta.
 
 ## Consecuencias
@@ -90,6 +95,7 @@ desactivado en el backend (la protección CSRF va en el BFF, con `SameSite=Stric
 - **Rompe los contratos de login y registro**: `mobile/.../ApiService.kt` (`registrarUsuario`, `verificarCodigo`,
   `validarCodigoYPin`, `login`, `obtenerMiUsuario`) y `frontend/js/login.js` (lee el token con
   `response.text()`), `usuarios.js` (`/registro`, `/validar`). Se actualizan en la misma fase.
-- Hay que regenerar el hash del admin y documentarlo en `.env.example` (sin valores reales).
+- `.env.example` documenta `ADMIN_USERNAME`/`ADMIN_PASSWORD` (sin valores reales); cambiar la contraseña de un admin
+  ya creado requiere actualizar su fila (no hay endpoint en Fase 1).
 - Los usuarios existentes se pierden con el reset (ADR 0001); no hay migración de PIN.
 - Un token de usuario ya no sirve para endpoints de admin (hoy sí sirve).
