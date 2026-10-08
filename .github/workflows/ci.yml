@@ -3,32 +3,14 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    # contextLoads arranca Spring completo y necesita una BD: se usa un Postgres de servicio
-    # (mas simple y fiel a produccion que anadir H2 y un perfil de test). Valores solo de CI.
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: parqueadero_ci
-          POSTGRES_USER: ci_user
-          POSTGRES_PASSWORD: ci-dummy-password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U ci_user -d parqueadero_ci"
-          --health-interval 5s --health-timeout 5s --health-retries 10
-    env:
-      DB_URL: jdbc:postgresql://localhost:5432/parqueadero_ci
-      DB_USER: ci_user
-      DB_PASSWORD: ci-dummy-password
-      OCR_SERVICE_URL: http://localhost:5000
-      ADMIN_USERNAME: ci-admin
-      ADMIN_PASSWORD: ci-dummy-password
-      SPRING_SECURITY_PASSWORD: ci-dummy-password
-      JWT_SECRET: ci-dummy-jwt-secret-at-least-32-bytes-long-0000
+    # Los tests de integracion (*IT) levantan su propio PostgreSQL 15 con Testcontainers (Docker ya esta en el
+    # runner) y configuran sus propios valores de prueba: no hace falta Postgres de servicio ni secretos.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
