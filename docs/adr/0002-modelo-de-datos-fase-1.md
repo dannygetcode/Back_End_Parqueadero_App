@@ -26,6 +26,7 @@ Tablas (nombres en español, `snake_case`, singular):
 | `pago` | Mensualidad pagada con comprobante | Estado PENDIENTE/APROBADO/RECHAZADO; periodo calculado por el backend; `monto_esperado` (copiado de la tarifa), `monto_ocr` y `monto_confirmado` separados; `tarifa_id`; hash del comprobante. |
 | `evento_acceso` | Cada lectura de placa / apertura | ENTRADA/SALIDA, PERMITIDO/DENEGADO, motivo, origen, placa leída tal cual, FKs opcionales a vehículo y usuario (placa desconocida = sin FK). Es la fuente de verdad de ocupación y la serie temporal para analítica. |
 | `puerta` | Estado de la puerta simulada | Una fila por parqueadero. |
+| `administrador` | Cuentas del panel | `usuario` único, `password_hash` BCrypt, `intentos_fallidos`, `bloqueado_hasta`. Se crea al arrancar desde variables de entorno si está vacía (ADR 0003). |
 | `camara` | Cámara simulada | Se conserva; se agrega `parqueadero_id`. |
 
 Reglas transversales:
@@ -45,12 +46,14 @@ Reglas transversales:
 - **Pronóstico (fases siguientes)**: el servicio Python escribirá en tablas propias (p. ej. `pronostico_ocupacion`)
   creadas por migración Flyway de este repo (ADR 0001) y Spring las expone en solo lectura. No se crean hoy.
 
-Cálculo del periodo de un pago (lo hace el backend al recibir el comprobante):
+Cálculo del periodo de un pago para una fecha de referencia F (lo hace el backend; se **propone al recibir** el
+comprobante con F = hoy y se **recalcula al aprobar** con F = fecha de aprobación, decisión P-02 del dueño):
 
-- Si el usuario tiene un pago APROBADO cuyo `periodo_fin >= hoy - dias_gracia`, el nuevo periodo empieza al día
+- Si el usuario tiene un pago APROBADO cuyo `periodo_fin >= F - dias_gracia`, el nuevo periodo empieza al día
   siguiente de ese `periodo_fin` (continuidad, sin huecos).
-- Si no, empieza hoy.
-- `periodo_fin = periodo_inicio + 1 mes - 1 día`. `monto_esperado` = tarifa vigente en `periodo_inicio` para el
+- Si no, empieza en F.
+- `periodo_fin = periodo_inicio + 1 mes - 1 día`, salvo que el día de inicio no exista en el mes siguiente: entonces
+  es el último día de ese mes (31-ene → 28/29-feb), para no acortar el periodo. `monto_esperado` = tarifa vigente en `periodo_inicio` para el
   tipo del cupo del usuario.
 - Solo puede haber un pago PENDIENTE por usuario a la vez (índice parcial único).
 

@@ -20,7 +20,8 @@ instante; lo usan la cámara simulada, la app y el panel. Lo hace todo en una tr
 
 1. Normaliza la placa (mayúsculas, sin espacios ni guiones) y busca un `vehiculo` activo, no simulado.
 2. **Anti-rebote**: si el mismo vehículo tiene un evento en los últimos `accesos.antirrebote-segundos` (60 s por
-   defecto), no crea otro y devuelve el existente con `duplicado = true`. Así no se duplica cuando la cámara lee
+   defecto), no crea otro y devuelve el existente con `duplicado = true`. Excepción: la apertura forzada del admin
+   justo después de una lectura denegada sí se registra (el admin decide abrir igual). Así no se duplica cuando la cámara lee
    dos veces o cuando el usuario pulsa "abrir" en la app y la cámara también lo lee.
 3. **Inferencia ENTRADA/SALIDA**: se mira el último evento **PERMITIDO** del vehículo. Si fue ENTRADA, este es
    SALIDA; si fue SALIDA o no hay ninguno, este es ENTRADA. Si la lectura trae `tipo` explícito (solo lo admite el
@@ -29,10 +30,13 @@ instante; lo usan la cámara simulada, la app y el panel. Lo hace todo en una tr
    - Placa desconocida: ENTRADA, DENEGADO, motivo `PLACA_DESCONOCIDA`, sin FKs; se guarda `placa_leida`.
    - ENTRADA: PERMITIDO solo si el usuario no está dado de baja, su estado es `ACTIVO` y tiene cupo asignado
      del mismo tipo que el vehículo. Si no, DENEGADO con motivo (`USUARIO_VENCIDO`, `USUARIO_SUSPENDIDO`,
-     `USUARIO_DE_BAJA`, `SIN_CUPO`).
+     `USUARIO_DE_BAJA`, `SIN_CUPO`, `TIPO_CUPO_DISTINTO`). Una ENTRADA explícita (solo el admin envía `tipo`) de un
+     vehículo que ya está dentro se deniega con `YA_DENTRO` y queda registrada (decisión P-05 del dueño).
    - SALIDA: **siempre PERMITIDA** (no se retiene un vehículo dentro). Si el usuario está vencido se registra
      igual, con la observación correspondiente.
-   - Origen `MANUAL_ADMIN`: el admin puede forzar una apertura; queda PERMITIDO con motivo `FORZADO_ADMIN`.
+   - Origen `MANUAL_ADMIN` (`PUT /api/puerta` del admin): siempre queda PERMITIDO. Si las reglas la denegarían (o la
+     placa es desconocida) se registra con motivo `FORZADO_ADMIN`, la `observacion` es obligatoria (si falta, 400) y
+     se anota la regla que se saltó.
 5. Si el resultado es PERMITIDO, abre la puerta: `puerta.abierta_hasta = now + accesos.apertura-segundos`
    (10 s). "Abierta" se calcula como `abierta_hasta > now()`: no hace falta un job que la cierre.
 6. Devuelve `EventoAccesoDTO` (tipo, resultado, motivo, placa, usuario, puerta abierta, duplicado).
@@ -62,7 +66,8 @@ desfase, salvo que la petición sea del generador de datos simulados (ver más a
 **Cómo queda `/api/puerta`**:
 
 - `GET /api/puerta` (ADMIN, USUARIO): `{ "abierta": bool, "abiertaHasta": instant, "ultimoEvento": {...} }`.
-  Sigue teniendo `abierta`, compatible con el `PuertaDTO` de la app y del panel.
+  Sigue teniendo `abierta`, compatible con el `PuertaDTO` de la app y del panel. Para un USUARIO, `ultimoEvento`
+  solo se incluye si es suyo (privacidad).
 - `PUT /api/puerta` se mantiene como **interruptor**, pero ya no escribe el booleano directamente:
   - `{ "abierta": true }` desde un **USUARIO**: la placa sale de su vehículo activo (no del body) y se llama a
     `AccesoService.registrar` con origen `APP_USUARIO`. Se aplican las mismas reglas: un usuario vencido no
@@ -72,9 +77,9 @@ desfase, salvo que la petición sea del generador de datos simulados (ver más a
   - `{ "abierta": false }` (ADMIN): cierra (`abierta_hasta = now`). No genera evento.
   - Respuesta: `PuertaDTO` con el `EventoAccesoDTO` anidado. 403 si se deniega el acceso, con el evento en el
     cuerpo (el intento denegado también queda registrado).
-- Para el generador de datos de la Fase 2: el endpoint acepta `simulado = true` y `ocurridoEn` libre solo con
-  ADMIN o SISTEMA. Alternativa equivalente: que el generador escriba directamente en la BD con `simulado = true`
-  (más rápido para 12 meses de datos). Se decide en la Fase 2; el modelo soporta ambas.
+- Generador de datos de la Fase 2 (decisión P-06): escribe directamente en la BD con `simulado = true`. En Fase 1
+  `LecturaPlacaDTO` no tiene `simulado` y `ocurridoEn` solo se acepta en el pasado con 5 min de desfase como mucho.
+  Si SISTEMA envía `tipo`, 400.
 
 **Consultas**: `GET /api/accesos` (ADMIN, con filtros de fecha, placa y resultado, paginado), `GET /api/accesos/mios`
 (USUARIO) y `GET /api/accesos/ocupacion` (ADMIN): por tipo de vehículo, cupos activos y ocupados. Ocupados = vehículos
