@@ -575,8 +575,8 @@ que el día de inicio no exista en el mes siguiente (31-ene → 28/29-feb, 31-ma
 | GET | `/api/accesos/ocupacion` | A | — | `OcupacionDTO {porTipo: [{tipoVehiculo, cupos, ocupados, libres}], vehiculosDentro: [{placa, usuario, desde}]}` |
 | GET | `/api/puerta` | A, U | — | `PuertaDTO {abierta, abiertaHasta, ultimoEvento?}`; para U, `ultimoEvento` solo si es suyo |
 | PUT | `/api/puerta` | A, U | `PuertaComandoDTO {abierta, placa? (obligatoria para A si abierta=true), tipo? (A), observacion? (A)}` | `PuertaDTO {..., evento}` (403 si se deniega). La apertura del **admin** siempre queda PERMITIDA: si las reglas la denegarían (o la placa es desconocida) se registra con `FORZADO_ADMIN` y `observacion` es obligatoria (si falta → 400) |
-| GET | `/api/camaras` | A, U | — | `List<CamaraDTO {id, nombre, url, activa, simulada}>` |
-| POST | `/api/camaras` | A | `CamaraDTO` | 201 `CamaraDTO` |
+| GET | `/api/camaras` | A, U | — | A: `List<CamaraDTO {id, nombre, url, activa, simulada}>`; U: `List<CamaraUsuarioDTO {id, nombre, activa}>` (sin `url`) |
+| POST | `/api/camaras` | A | `CamaraDTO` (`url` http/https sin `usuario:clave@`) | 201 `CamaraDTO` |
 | PUT | `/api/camaras/{id}` | A | `{activa}` | `CamaraDTO` |
 
 `EventoAccesoDTO`: `{id, placaLeida, tipo, tipoInferido, resultado, motivo, origen, usuarioId?, usuarioNombre?, vehiculo?, ocurridoEn, puertaAbierta, duplicado}`.

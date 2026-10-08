@@ -177,7 +177,7 @@ Semilla de tarifas (`V2__datos_iniciales.sql`, decisión del dueño):
 
 | ID | Descripción | Prior. | Fase |
 |---|---|---|---|
-| RF-45 | `GET /api/camaras` (A, U), `POST /api/camaras` (A) y `PUT /api/camaras/{id}` (A, con `{activa}`). `CamaraDTO {id, nombre, url, activa, simulada}`. Se quita `@CrossOrigin("*")`. Validación: `nombre` de 1 a 50; `url` opcional, hasta 200 caracteres y esquema `http`/`https`. | M | F1 |
+| RF-45 | `GET /api/camaras` (A, U), `POST /api/camaras` (A) y `PUT /api/camaras/{id}` (A, con `{activa}`). El ADMIN recibe `CamaraDTO {id, nombre, url, activa, simulada}`; el USUARIO, `CamaraUsuarioDTO {id, nombre, activa}` **sin `url`** (la URL del stream es información interna). Se quita `@CrossOrigin("*")`. Validación: `nombre` de 1 a 50; `url` opcional, hasta 200 caracteres, esquema `http`/`https` y **sin credenciales** (`usuario:clave@host` → 400). | M | F1 |
 
 ### 4.8 Perfil, privacidad y datos simulados
 
@@ -428,7 +428,7 @@ Romper el contrato está aceptado (se rompe una vez, sin `/v1`). Consumidores: `
 | `GET /api/puerta` → `{abierta}` | `{abierta, abiertaHasta, ultimoEvento?}` (ADMIN, USUARIO) | `ApiService.obtenerEstadoPuerta`, `puerta.js` | Compatible: `abierta` se mantiene |
 | `PUT /api/puerta {abierta}` | Misma forma; ADMIN debe enviar `placa` al abrir; genera evento; 403 con el evento si se deniega | `ApiService.actualizarEstadoPuerta`, `puerta.js` | La app se adapta en FM |
 | — | `POST /api/accesos/lecturas` con `X-Api-Key` (simulador) o JWT ADMIN | Simulador, panel | Nuevo |
-| `GET /api/camaras` público | Requiere token (ADMIN o USUARIO); `CamaraDTO` añade `simulada` | `ApiService.getCamaras`, `camaras.js`, `puerta.js` | |
+| `GET /api/camaras` público | Requiere token (ADMIN o USUARIO). ADMIN: `CamaraDTO` añade `simulada`. USUARIO: `CamaraUsuarioDTO {id, nombre, activa}`, **sin `url`** | `ApiService.getCamaras`, `camaras.js`, `puerta.js` | La app no puede mostrar el stream con la URL de la API |
 | `POST/PUT /api/camaras` públicos | Solo ADMIN; `PUT` recibe `{activa}` | `camaras.js` | |
 | — | Nuevos: `/api/auth/*`, `/api/cupos`, `/api/tarifas`, `/api/pagos/proximo-periodo`, `/api/pagos/manual`, `/api/accesos`, `/api/accesos/mios`, `/api/accesos/ocupacion`, `/api/usuarios/yo/pin`, `/api/ping`, `/api/legal/aviso-privacidad` | Next.js y FM | |
 
