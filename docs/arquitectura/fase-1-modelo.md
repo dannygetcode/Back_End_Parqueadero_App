@@ -597,6 +597,13 @@ que el día de inicio no exista en el mes siguiente (31-ene → 28/29-feb, 31-ma
 | `frontend/js/puerta.js` | `PUT /puerta {abierta}` | Añadir `placa` al abrir |
 | `frontend/js/camaras.js` | `GET/POST/PUT /camaras` sin token | Enviar el token |
 
+### 5.1 Analítica (Fase 4, paso 1)
+
+Endpoints de solo lectura en el paquete `analitica` (`GET /api/analitica/{resumen, ocupacion, ocupacion/mapa-calor,
+ingresos, morosidad, permanencia}` para ADMIN y `GET /api/usuarios/yo/resumen` para USUARIO). Cumplen RF-50 a RF-53 y
+RF-55; el pronóstico (RF-54) lo sirve el servicio Python. Rangos de más de 400 días responden 400. Índice nuevo en
+V4 (`evento_acceso(ocurrido_en)`). Contrato completo en `docs/contrato-analitica.md`.
+
 ## 6. Configuración nueva (variables de entorno; valores reales solo en `.env`, fuera de git)
 
 | Propiedad | Variable | Por defecto | Notas |
