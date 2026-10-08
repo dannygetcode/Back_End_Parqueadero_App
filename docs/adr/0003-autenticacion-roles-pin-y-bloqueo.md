@@ -62,6 +62,9 @@ desde variables de entorno; Next.js usará BFF con cookie httpOnly en una fase p
 - Mensaje de error genérico ("teléfono o PIN incorrectos") para no revelar qué teléfonos existen.
 - Parámetros en propiedades: `seguridad.pin.max-intentos=5`, `seguridad.pin.bloqueo-minutos=15`.
 - Admin: el mismo límite, persistido en su fila de `administrador` (sobrevive a reinicios).
+- El contador es atómico: login, activación, cambio de PIN y login del admin leen la fila con
+  `SELECT ... FOR UPDATE` (`@Lock(PESSIMISTIC_WRITE)`), así que los intentos simultáneos sobre la misma cuenta se
+  serializan y ninguno pierde su incremento (con 20 intentos paralelos: 5 se evalúan y bloquean, 15 reciben 423).
 
 **Admin** (actualizado en la implementación, resolución del orquestador): tabla `administrador` (`usuario` único,
 `password_hash` BCrypt, `intentos_fallidos`, `bloqueado_hasta`) en V1. Al arrancar, si la tabla está vacía, se crea

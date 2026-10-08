@@ -5,12 +5,22 @@ import com.parqueadero.backend.entity.TipoVehiculo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,6 +30,8 @@ class BloqueoIT extends PruebaIntegracion {
 
     @Autowired
     PasswordEncoder encoder;
+    @Autowired
+    JdbcTemplate jdbc;
 
     @Test
     void usuarioSeBloqueaTrasCincoFallosYSeDesbloqueaALos15Minutos() throws Exception {
@@ -35,6 +47,42 @@ class BloqueoIT extends PruebaIntegracion {
 
         reloj.adelantar(Duration.ofMinutes(2));
         loginUsuario(u.telefono(), PIN).andExpect(status().isOk()).andExpect(jsonPath("$.token").exists());
+    }
+
+    /**
+     * N1: 20 intentos fallidos simultáneos. Con el contador atómico (SELECT ... FOR UPDATE) exactamente 5 se evalúan
+     * (401) y bloquean la cuenta; los otros 15 ya la encuentran bloqueada (423). Sin el bloqueo de fila, varios hilos
+     * leían el mismo contador y se colaban más de 5 comprobaciones del PIN.
+     */
+    @Test
+    void intentosFallidosSimultaneosNoPierdenIncrementos() throws Exception {
+        UsuarioPrueba u = crearUsuario(TipoVehiculo.CARRO);
+        activar(u);
+        int hilos = 20;
+        ExecutorService pool = Executors.newFixedThreadPool(hilos);
+        CountDownLatch salida = new CountDownLatch(1);
+        List<Future<Integer>> resultados = new ArrayList<>();
+        try {
+            for (int i = 0; i < hilos; i++) {
+                resultados.add(pool.submit(() -> {
+                    salida.await();
+                    return loginUsuario(u.telefono(), "739104").andReturn().getResponse().getStatus();
+                }));
+            }
+            salida.countDown();
+            Map<Integer, Integer> porEstado = new HashMap<>();
+            for (Future<Integer> f : resultados) {
+                porEstado.merge(f.get(60, TimeUnit.SECONDS), 1, Integer::sum);
+            }
+            assertThat(porEstado).containsEntry(401, 5).containsEntry(423, 15).hasSize(2);
+        } finally {
+            pool.shutdownNow();
+        }
+        Map<String, Object> fila = jdbc.queryForMap(
+                "SELECT intentos_fallidos, bloqueado_hasta FROM usuario WHERE id = ?", u.id());
+        assertThat(fila.get("bloqueado_hasta")).isNotNull();
+        assertThat(((Number) fila.get("intentos_fallidos")).intValue()).isZero();
+        loginUsuario(u.telefono(), PIN).andExpect(status().isLocked());
     }
 
     @Test
