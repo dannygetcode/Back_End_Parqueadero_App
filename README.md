@@ -7,15 +7,19 @@ Diseño de la Fase 1: `docs/arquitectura/fase-1-modelo.md` y ADR en `docs/adr/`.
 ## Configuracion
 Todo se configura por variables de entorno (ver `.env.example`). Los secretos no van en git.
 
-1. `cp .env.example .env` y reemplaza cada `change-me`.
+1. `cp .env.example .env` y reemplaza cada `change-me` (los comentarios de `.env.example` dicen como generar cada
+   secreto, p. ej. `openssl rand -base64 48`).
 2. `.env` esta en `.gitignore`; nunca lo subas.
+3. El backend **no arranca** si una credencial vale `change-me`, si `JWT_SECRET` o `CAMARA_API_KEY` (cuando se define)
+   tienen menos de 32 bytes, o si `ADMIN_PASSWORD` (cuando se define) tiene menos de 12 caracteres. El error nombra la
+   variable, nunca el valor.
 
 | Variable | Obligatoria | Uso |
 |---|---|---|
 | `POSTGRES_DB`, `DB_USER`, `DB_PASSWORD` | si | Base de datos (compose crea la BD con ellas) |
 | `JWT_SECRET` | si | Firma de los JWT, 32 bytes o mas (`openssl rand -base64 48`). Sin ella no arranca |
-| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | la primera vez | Crean el administrador si la tabla `administrador` esta vacia (solo se guarda el hash BCrypt). Despues se ignoran |
-| `CAMARA_API_KEY` | para el simulador | Cabecera `X-Api-Key` del simulador de camara (rol SISTEMA). 32+ bytes aleatorios (`openssl rand -hex 32`) |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | la primera vez | Crean el administrador si la tabla `administrador` esta vacia (solo se guarda el hash BCrypt). Despues se ignoran. `ADMIN_PASSWORD` de 12 caracteres o mas (`openssl rand -base64 18`) |
+| `CAMARA_API_KEY` | para el simulador | Cabecera `X-Api-Key` del simulador de camara (rol SISTEMA). 32+ bytes aleatorios (`openssl rand -hex 32`); vacia = simulador deshabilitado |
 | `CORS_ORIGENES` | no | Origenes permitidos separados por comas. Por defecto `http://localhost:5500,http://localhost:3000` |
 | `SERVER_PORT` | no | Puerto publicado en el host (8080) |
 | `SERVER_ADDRESS` | no | Fuera de Docker: `127.0.0.1` por defecto; `0.0.0.0` solo si hay que exponerlo en la LAN |
