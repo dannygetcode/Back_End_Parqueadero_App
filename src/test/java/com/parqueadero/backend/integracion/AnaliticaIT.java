@@ -211,6 +211,22 @@ class AnaliticaIT extends PruebaIntegracion {
                 .at("/serie/0/carro").asDouble()).isZero();
     }
 
+    @Test
+    void incluirSimuladosAceptaValoresLaxosDeSpringYRechazaLosInvalidos() throws Exception {
+        long conSim = admin("/api/analitica/ingresos?anio=2025&incluirSimulados=true").at("/totalAnual/total").asLong();
+        assertThat(conSim).isPositive();
+        for (String v : new String[]{"yes", "1", "TRUE", "on"}) {   // StringToBooleanConverter de Spring
+            assertThat(admin("/api/analitica/ingresos?anio=2025&incluirSimulados=" + v).at("/totalAnual/total").asLong())
+                    .as(v).isEqualTo(conSim);
+        }
+        for (String v : new String[]{"no", "0", "FALSE", ""}) {   // vacío = valor omitido = false
+            assertThat(admin("/api/analitica/ingresos?anio=2025&incluirSimulados=" + v).at("/totalAnual/total").asLong())
+                    .as(v).isZero();
+        }
+        mvc.perform(get("/api/analitica/ingresos?anio=2025&incluirSimulados=abc").header("Authorization", bearerAdmin()))
+                .andExpect(status().isBadRequest());
+    }
+
     // ---- morosidad
     @Test
     void morosidadConDiasMoraMontoYAtraso() throws Exception {
