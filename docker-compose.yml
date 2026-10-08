@@ -23,6 +23,28 @@ services:
     restart: unless-stopped
     # Solo accesible por el backend (red interna).
 
+  pronostico:
+    build: ./pronostico
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      # Mismo valor que usa el backend (usuarios.vencimiento.dias-gracia).
+      GRACIA_DIAS: ${GRACIA_DIAS:-5}
+    # Sin "ports": no tiene autenticacion, solo lo ve el backend por la red interna de compose.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/salud', timeout=3).status == 200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
   backend:
     build: .
     restart: unless-stopped
@@ -31,6 +53,8 @@ services:
         condition: service_healthy
       ocr:
         condition: service_started
+      pronostico:
+        condition: service_healthy
     environment:
       # Dentro del contenedor hay que escuchar en todas las interfaces; la exposicion la decide "ports".
       SERVER_ADDRESS: 0.0.0.0
@@ -38,6 +62,8 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       OCR_SERVICE_URL: http://ocr:5000
+      PRONOSTICO_URL: http://pronostico:8000
+      GRACIA_DIAS: ${GRACIA_DIAS:-5}
       # Solo se usan si la tabla administrador esta vacia (se guarda el hash BCrypt).
       ADMIN_USERNAME: ${ADMIN_USERNAME}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
