@@ -19,6 +19,6 @@ Usted puede conocer, actualizar, rectificar y suprimir sus datos; solicitar prue
 Los datos de su cuenta se conservan mientras tenga la mensualidad activa. Los comprobantes y el historial de pagos y accesos se conservan como soporte contable mientras exista ese historial, aunque se dé de baja la cuenta.
 
 6. Seguridad
-El PIN y el código de activación se guardan cifrados con una función de hash; los comprobantes solo los ven usted y el administrador.
+El PIN y el código de activación se guardan protegidos con hash irreversible; los comprobantes solo los ven usted y el administrador.
 
 Al activar su cuenta y marcar la casilla de aceptación, usted autoriza de forma previa, expresa e informada el tratamiento de sus datos para las finalidades descritas. Se registra la fecha, la hora y la versión de este aviso.
