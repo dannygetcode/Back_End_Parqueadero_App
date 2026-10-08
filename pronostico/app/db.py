@@ -22,8 +22,10 @@ def _leer_env(ruta: Path) -> dict:
 
 
 def conectar() -> psycopg.Connection:
-    # El .env del repo solo es un respaldo para desarrollo local; en compose mandan las variables de entorno.
-    env = {**_leer_env(RAIZ_REPO / ".env"), **os.environ}
+    # El .env del repo es un respaldo solo para desarrollo local y hay que pedirlo (PRONOSTICO_LEER_DOTENV=1);
+    # en compose mandan las variables de entorno.
+    respaldo = _leer_env(RAIZ_REPO / ".env") if os.environ.get("PRONOSTICO_LEER_DOTENV") == "1" else {}
+    env = {**respaldo, **os.environ}
     faltan = [k for k in ("POSTGRES_DB", "DB_USER", "DB_PASSWORD") if not env.get(k)]
     if faltan:
         raise RuntimeError("Faltan variables de entorno: " + ", ".join(faltan))

@@ -20,14 +20,17 @@ def primeras_entradas(visitas) -> dict:
     return out
 
 
-def estadistica_dia(primeras: dict, fecha, hoy, semanas: int) -> dict:
-    """Probabilidad de venir y hora (p25/mediana/p75) para el dia de semana de `fecha`, mirando `semanas` atras."""
+def estadistica_dia(primeras: dict, fecha, hoy, semanas: int, desde=None, min_dias: int = 3) -> dict:
+    """Probabilidad de venir y hora (p25/mediana/p75) para el dia de semana de `fecha`, mirando `semanas` atras.
+    `desde` = primer dia con datos reales del sistema: los dias anteriores no cuentan como observados.
+    Con menos de `min_dias` dias observados la probabilidad es None (no se inventa)."""
     ref = [hoy - timedelta(days=k) for k in range(1, semanas * 7 + 1)
-           if (hoy - timedelta(days=k)).weekday() == fecha.weekday()]
+           if (hoy - timedelta(days=k)).weekday() == fecha.weekday()
+           and (desde is None or hoy - timedelta(days=k) >= desde)]
     horas = [primeras[d] for d in ref if d in primeras]
     n, k = len(ref), len(horas)
     res = {"fecha": fecha.isoformat(), "diaSemana": DIAS[fecha.weekday()], "diasObservados": n,
-           "diasConEntrada": k, "probabilidadVenir": round((k + 0.5) / (n + 1), 3) if n else None}
+           "diasConEntrada": k, "probabilidadVenir": round((k + 0.5) / (n + 1), 3) if n >= min_dias else None}
     if k >= MIN_DIAS_CON_ENTRADA:
         q = np.quantile(horas, [0.25, 0.5, 0.75])
         res.update(horaMediana=hhmm(q[1]), horaP25=hhmm(q[0]), horaP75=hhmm(q[2]), _p75=float(q[2]),
@@ -46,7 +49,7 @@ def tiempo_fuera_horas(visitas, ahora: datetime, dias: int = 90):
     return (float(np.median(gaps)), len(gaps)) if gaps else (None, 0)
 
 
-def proxima_llegada(visitas, ahora: datetime, semanas: int = 8, horizonte: int = 7) -> dict:
+def proxima_llegada(visitas, ahora: datetime, semanas: int = 8, horizonte: int = 7, desde=None) -> dict:
     """Primer dia (desde hoy) con probabilidad de venir >= 0.5; hoy solo si aun no entro y la hora p75 no paso.
     Si ningun dia llega a 0.5 devuelve el de mayor probabilidad con alcanzaUmbral50=false."""
     hoy = ahora.date()
@@ -54,7 +57,7 @@ def proxima_llegada(visitas, ahora: datetime, semanas: int = 8, horizonte: int =
     mejor = None
     for k in range(0, horizonte + 1):
         f = hoy + timedelta(days=k)
-        est = estadistica_dia(primeras, f, hoy, semanas)
+        est = estadistica_dia(primeras, f, hoy, semanas, desde)
         if k == 0:
             hora_actual = ahora.hour + ahora.minute / 60
             if hoy in primeras or (est["_p75"] is not None and hora_actual > est["_p75"]):

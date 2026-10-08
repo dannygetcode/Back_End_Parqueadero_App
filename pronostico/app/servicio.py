@@ -59,6 +59,8 @@ def respuesta_ocupacion(datos, ahora: datetime, incluir: bool, horizonte_dias: i
         cuerpo.update(datosInsuficientes=True, semanasHistoria=0)
         return _sobre(ahora, incluir, "ocupacion", metricas, cuerpo)
     base, n = _base_serie(visitas, ahora)
+    semanas = n / oc.SEMANA_H
+    suficiente_global = semanas >= cfg.MIN_SEMANAS_OCUPACION
     serie = oc.serie_ocupacion(visitas, "CARRO", base, n, ahora)
     est = oc.estadisticos(oc.perfil_estacional(serie, base, n, cfg.VENTANA_SEMANAS_OCUPACION), capacidad)
     redondeo = lambda x: None if np.isnan(x) else round(float(x), 2)  # noqa: E731
@@ -68,12 +70,19 @@ def respuesta_ocupacion(datos, ahora: datetime, incluir: bool, horizonte_dias: i
         horas = []
         for h in range(24):
             k = oc.clave(dia + timedelta(hours=h))
-            horas.append({"hora": h, "mediana": redondeo(est["mediana"][k]), "media": redondeo(est["media"][k]), "p10": redondeo(est["p10"][k]),
+            obs = int(est["n"][k])
+            if not suficiente_global or obs < cfg.MIN_OBS_HORA:
+                horas.append({"hora": h, "suficiente": False, "mediana": None, "media": None, "p10": None,
+                              "p90": None, "probLleno": None, "observaciones": obs})
+                continue
+            horas.append({"hora": h, "suficiente": True, "mediana": redondeo(est["mediana"][k]),
+                          "media": redondeo(est["media"][k]), "p10": redondeo(est["p10"][k]),
                           "p90": redondeo(est["p90"][k]),
                           "probLleno": None if np.isnan(est["pLleno"][k]) else round(float(est["pLleno"][k]), 3),
-                          "observaciones": int(est["n"][k])})
+                          "observaciones": obs})
         cuerpo["dias"].append({"fecha": dia.date().isoformat(), "horas": horas})
-    cuerpo.update(datosInsuficientes=False, semanasHistoria=round(n / oc.SEMANA_H, 1),
+    cuerpo.update(datosInsuficientes=not suficiente_global, semanasHistoria=round(semanas, 1),
+                  minSemanasHistoria=cfg.MIN_SEMANAS_OCUPACION, minObservacionesHora=cfg.MIN_OBS_HORA,
                   ventanaSemanas=cfg.VENTANA_SEMANAS_OCUPACION)
     return _sobre(ahora, incluir, "ocupacion", metricas, cuerpo)
 
@@ -85,12 +94,14 @@ def respuesta_llegadas(datos, ahora: datetime, incluir: bool, metricas=None) -> 
     for v in visitas:
         if v.usuario_id is not None:
             por_usuario.setdefault(v.usuario_id, []).append(v)
+    # Primer dia con datos reales: antes de esa fecha no hay observacion, no "no vino".
+    desde = min((v.entrada.date() for v in visitas), default=ahora.date())
     usuarios = []
     for uid, estado, cupo, tipo in sorted(datos.usuarios, key=lambda u: u[2]):
         vs = por_usuario.get(uid, [])
         fuera, n_gaps = lg.tiempo_fuera_horas(vs, ahora)
         item = {"usuarioId": uid, "cupo": cupo, "tipoVehiculo": tipo, "estado": estado,
-                **lg.proxima_llegada(vs, ahora, cfg.SEMANAS_LLEGADA),
+                **lg.proxima_llegada(vs, ahora, cfg.SEMANAS_LLEGADA, desde=desde),
                 "tiempoFueraMedianaHoras": None if fuera is None else round(fuera, 1), "visitasConsideradas": n_gaps}
         usuarios.append(item)
     return _sobre(ahora, incluir, "llegadas", metricas, {

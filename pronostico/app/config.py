@@ -14,6 +14,10 @@ PRIOR_PESO = float(os.environ.get("PRIOR_PESO", "10"))
 CACHE_HORAS = float(os.environ.get("CACHE_HORAS", "3"))
 VENTANA_SEMANAS_OCUPACION = int(os.environ.get("VENTANA_SEMANAS_OCUPACION", "12"))
 SEMANAS_LLEGADA = 8
+# Umbrales de suficiencia de datos: por debajo, el pronostico se marca como insuficiente y no se inventan valores.
+MIN_SEMANAS_OCUPACION = float(os.environ.get("MIN_SEMANAS_OCUPACION", "4"))
+MIN_OBS_HORA = int(os.environ.get("MIN_OBS_HORA", "3"))
+MIN_DIAS_LLEGADA = 3
 MUESTRAS_MC = 2000
 SEMILLA = 2025
 HORIZONTE_MAX_DIAS = 14
