@@ -1,18 +1,40 @@
 package com.parqueadero.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.Instant;
+
+/** Puerta simulada. Abierta = abiertaHasta posterior al instante actual (ADR 0004); no hay job de cierre. */
 @Entity
 @Table(name = "puerta")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Puerta {
-    @Id
-    private Long id = 1L;
 
-    @Column(nullable = false)
-    private Boolean abierta;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "parqueadero_id")
+    private Parqueadero parqueadero;
+
+    @Column(nullable = false, length = 50)
+    private String nombre;
+
+    @Column(name = "abierta_hasta")
+    private Instant abiertaHasta;
+
+    @UpdateTimestamp
+    @Column(name = "actualizado_en", nullable = false)
+    private Instant actualizadoEn;
+
+    public boolean estaAbierta(Instant ahora) {
+        return abiertaHasta != null && abiertaHasta.isAfter(ahora);
+    }
 }

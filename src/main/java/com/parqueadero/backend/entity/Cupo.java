@@ -8,12 +8,13 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
+/** Plaza física. La capacidad del parqueadero es el número de cupos activos por tipo. */
 @Entity
-@Table(name = "camara")
+@Table(name = "cupo")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Camara {
+public class Cupo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,17 +24,15 @@ public class Camara {
     @JoinColumn(name = "parqueadero_id")
     private Parqueadero parqueadero;
 
-    @Column(nullable = false, length = 50)
-    private String nombre;
+    @Column(nullable = false, length = 10)
+    private String codigo;
 
-    @Column(length = 200)
-    private String url;
-
-    @Column(nullable = false)
-    private boolean activa = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_vehiculo", nullable = false, length = 10)
+    private TipoVehiculo tipoVehiculo;
 
     @Column(nullable = false)
-    private boolean simulada = true;
+    private boolean activo = true;
 
     @CreationTimestamp
     @Column(name = "creado_en", nullable = false, updatable = false)

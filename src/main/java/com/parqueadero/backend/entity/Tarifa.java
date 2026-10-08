@@ -7,13 +7,15 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
+/** Precio mensual por tipo. La vigente en una fecha F es la de mayor vigenteDesde <= F. */
 @Entity
-@Table(name = "camara")
+@Table(name = "tarifa")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Camara {
+public class Tarifa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,17 +25,16 @@ public class Camara {
     @JoinColumn(name = "parqueadero_id")
     private Parqueadero parqueadero;
 
-    @Column(nullable = false, length = 50)
-    private String nombre;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_vehiculo", nullable = false, length = 10)
+    private TipoVehiculo tipoVehiculo;
 
-    @Column(length = 200)
-    private String url;
+    /** Pesos colombianos. */
+    @Column(name = "valor_mensual", nullable = false)
+    private Integer valorMensual;
 
-    @Column(nullable = false)
-    private boolean activa = true;
-
-    @Column(nullable = false)
-    private boolean simulada = true;
+    @Column(name = "vigente_desde", nullable = false)
+    private LocalDate vigenteDesde;
 
     @CreationTimestamp
     @Column(name = "creado_en", nullable = false, updatable = false)

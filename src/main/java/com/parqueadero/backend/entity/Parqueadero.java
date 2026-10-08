@@ -8,32 +8,26 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
+/** La sede. Hoy hay una sola fila (id = 1); el resto de tablas raíz cuelgan de ella. */
 @Entity
-@Table(name = "camara")
+@Table(name = "parqueadero")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Camara {
+public class Parqueadero {
+
+    /** Id de la única sede de la Fase 1 (sembrada en V2). */
+    public static final long PRINCIPAL = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "parqueadero_id")
-    private Parqueadero parqueadero;
-
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 80)
     private String nombre;
 
-    @Column(length = 200)
-    private String url;
-
-    @Column(nullable = false)
-    private boolean activa = true;
-
-    @Column(nullable = false)
-    private boolean simulada = true;
+    @Column(name = "zona_horaria", nullable = false, length = 40)
+    private String zonaHoraria;
 
     @CreationTimestamp
     @Column(name = "creado_en", nullable = false, updatable = false)
