@@ -72,22 +72,12 @@ public class CupoServiceImpl implements CupoService {
     }
 
     /**
-     * ocupado = asignado a un usuario vigente (no dado de baja) que está ACTIVO, o VENCIDO pero con su último periodo
-     * aprobado todavía dentro de los días de gracia. Un cupo de un usuario SUSPENDIDO o vencido de verdad aparece
-     * con usuarioId pero ocupado = false (sigue asignado: para reasignarlo hay que darlo de baja o cambiarle el cupo).
+     * ocupado = asignado a un usuario no dado de baja, en cualquier estado (el cupo no se puede reasignar sin darlo
+     * de baja o cambiarle el cupo). vigente = ese usuario está ACTIVO.
      */
     private CupoDTO dto(Cupo c) {
         Usuario u = usuarioRepo.findByCupoIdAndDadoDeBajaEnIsNullAndSimuladoFalse(c.getId()).orElse(null);
-        boolean ocupado = false;
-        if (u != null) {
-            if (u.getEstado() == EstadoUsuario.ACTIVO) {
-                ocupado = true;
-            } else if (u.getEstado() == EstadoUsuario.VENCIDO) {
-                LocalDate fin = mapeos.vigenteHasta(u.getId());
-                ocupado = fin != null && !fin.plusDays(diasGracia).isBefore(LocalDate.now(clock));
-            }
-        }
         return new CupoDTO(c.getId(), c.getCodigo(), c.getTipoVehiculo(), c.isActivo(),
-                u != null ? u.getId() : null, ocupado);
+                u != null ? u.getId() : null, u != null, u != null && u.getEstado() == EstadoUsuario.ACTIVO);
     }
 }

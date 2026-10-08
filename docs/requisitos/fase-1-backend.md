@@ -123,7 +123,7 @@ Semilla de tarifas (`V2__datos_iniciales.sql`, decisión del dueño):
 | RF-17 | `PUT /api/usuarios/{id}` (A) con `UsuarioActualizacionDTO {telefono?, nombre?, apellido?, cupoId?}`; `PUT /api/usuarios/{id}/vehiculo` (A) con `VehiculoDTO`: el vehículo anterior pasa a inactivo y se crea uno nuevo (se conserva el historial de accesos). Mismas validaciones que RF-12; el cupo nuevo debe ser del tipo del vehículo activo. | M | F1 |
 | RF-18 | `DELETE /api/usuarios/{id}` (A) hace una baja lógica: `dado_de_baja_en = now`, `cupo_id = null`, vehículo inactivo; el estado se deja como estaba. Conserva pagos, comprobantes y eventos. Responde 204. | M | F1 |
 | RF-19 | `PUT /api/usuarios/{id}/estado` (A) con `CambioEstadoDTO {accion: SUSPENDER\|REACTIVAR, motivo?}`. SUSPENDER exige `motivo` (1 a 200 caracteres) y lo guarda en `suspendido_motivo`; REACTIVAR quita la suspensión y recalcula ACTIVO/VENCIDO con RF-35 (puede quedar VENCIDO). Otra acción → 400. | M | F1 |
-| RF-20 | `GET /api/cupos` (A) devuelve `List<CupoDTO {id, codigo, tipoVehiculo, activo, usuarioId?, ocupado}>`, donde `ocupado` indica que el cupo está asignado a un usuario vigente. La ocupación física (vehículos dentro) está en RF-60. | M | F1 |
+| RF-20 | `GET /api/cupos` (A) devuelve `List<CupoDTO {id, codigo, tipoVehiculo, activo, usuarioId?, ocupado, vigente}>`, donde `ocupado` indica que el cupo está asignado a un usuario no dado de baja (cualquier estado) y `vigente` que ese usuario está ACTIVO. La ocupación física (vehículos dentro) está en RF-60. | M | F1 |
 | RF-21 | `POST /api/cupos` (A) con `{codigo, tipoVehiculo}` → 201; `PUT /api/cupos/{id}` (A) con `{activo}`; desactivar un cupo asignado → 409; código repetido → 409. Permite crecer sin migraciones. | S | F1 |
 
 ### 4.3 Tarifas

@@ -529,7 +529,7 @@ Ya no tiene `pin`, `codigoValidacion`, `verificado` ni `activo` (`validado` sust
 
 | Método | Ruta | Rol | Entrada | Salida |
 |---|---|---|---|---|
-| GET | `/api/cupos` | A | — | `List<CupoDTO {id, codigo, tipoVehiculo, activo, usuarioId?, ocupado}>` (ver definición de `ocupado` abajo) |
+| GET | `/api/cupos` | A | — | `List<CupoDTO {id, codigo, tipoVehiculo, activo, usuarioId?, ocupado, vigente}>` (ver definición abajo) |
 | POST | `/api/cupos` | A | `CupoDTO {codigo, tipoVehiculo}` | 201 `CupoDTO` |
 | PUT | `/api/cupos/{id}` | A | `{activo}` | `CupoDTO` (409 si se desactiva un cupo asignado) |
 | GET | `/api/tarifas?vigentes=true` | A, U | — | `List<TarifaDTO {id, tipoVehiculo, valorMensual, vigenteDesde}>` |
@@ -537,10 +537,9 @@ Ya no tiene `pin`, `codigoValidacion`, `verificado` ni `activo` (`validado` sust
 
 Las tarifas no se editan ni se borran: una nueva vigencia sustituye a la anterior.
 
-`CupoDTO.ocupado` (ocupación "comercial", no física): el cupo está asignado a un usuario no dado de baja que está
-`ACTIVO`, o `VENCIDO` pero con el fin de su último periodo aprobado todavía dentro de los días de gracia. Un cupo de un
-usuario `SUSPENDIDO` o vencido de verdad muestra `usuarioId` pero `ocupado = false`; sigue asignado (para reasignarlo
-hay que dar de baja al usuario o cambiarle el cupo). La ocupación física está en `GET /api/accesos/ocupacion`.
+`CupoDTO.ocupado` (ocupación "comercial", no física): el cupo está asignado a un usuario no dado de baja, en cualquier
+estado (`ACTIVO`, `VENCIDO` o `SUSPENDIDO`); para reasignarlo hay que dar de baja al usuario o cambiarle el cupo.
+`CupoDTO.vigente`: ese usuario está `ACTIVO`. La ocupación física está en `GET /api/accesos/ocupacion`.
 
 ### Pagos
 
