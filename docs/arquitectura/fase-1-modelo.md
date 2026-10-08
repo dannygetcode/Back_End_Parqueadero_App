@@ -490,7 +490,7 @@ app publicada que no se pueda actualizar a la vez que el backend.
 
 Errores: `ProblemDetail` (RFC 9457, nativo en Spring 6) desde un `@RestControllerAdvice`. 400 para validación,
 401 sin token o token inválido, 403 rol insuficiente o acceso denegado, 404, 409 (duplicado, pago pendiente
-existente, cupo ocupado), 423 (usuario bloqueado). Hoy los servicios lanzan `RuntimeException`, que llega como 500.
+existente, cupo ocupado), 423 (usuario bloqueado), 429 (límite por IP en los endpoints de autenticación). Hoy los servicios lanzan `RuntimeException`, que llega como 500.
 
 Leyenda de roles: **P** público, **A** ADMIN, **U** USUARIO (el suyo propio), **S** SISTEMA (API key).
 
@@ -607,6 +607,7 @@ que el día de inicio no exista en el mes siguiente (31-ene → 28/29-feb, 31-ma
 | `cors.origenes` | `CORS_ORIGENES` | `http://localhost:5500,http://localhost:3000` | Saca las IPs de LAN de `SecurityConfig` |
 | `jwt.expiracion.admin` / `.usuario` | — | `4h` / `12h` | |
 | `seguridad.pin.max-intentos` / `.bloqueo-minutos` | — | `5` / `15` | |
+| `seguridad.limite-ip.max-peticiones` / `.ventana-segundos` / `.cabecera-ip-cliente` | `LIMITE_IP_MAX_PETICIONES` / `LIMITE_IP_VENTANA_SEGUNDOS` / `LIMITE_IP_CABECERA` | `10` / `60` / vacío | Límite por IP en los logins y la activación (429). La cabecera solo detrás de un proxy que la sobrescriba (ADR 0003) |
 | `codigo-validacion.horas` | — | `72` | |
 | `usuarios.vencimiento.dias-gracia` / `.cron` | — | `5` / `0 5 0 * * *` | Zona `America/Bogota` |
 | `accesos.antirrebote-segundos` / `.apertura-segundos` / `.desfase-maximo-minutos` | — | `60` / `10` / `5` | |

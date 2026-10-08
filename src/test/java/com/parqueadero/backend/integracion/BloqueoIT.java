@@ -126,6 +126,41 @@ class BloqueoIT extends PruebaIntegracion {
         loginAdmin(usuario, "clave-correcta").andExpect(status().isOk());
     }
 
+    /** N2: un teléfono o un admin inexistente responde igual que uno real: 5 x 401 y después 423. */
+    @Test
+    void cuentasInexistentesSeComportanIgualQueLasReales() throws Exception {
+        String telefono = telefonoAleatorio();
+        for (int i = 0; i < 3; i++) {
+            loginUsuario(telefono, "739104").andExpect(status().isUnauthorized());
+        }
+        // Login y activación comparten el contador, como en la fila de un usuario real.
+        for (int i = 0; i < 2; i++) {
+            mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
+                            .content(cuerpo(Map.of("telefono", telefono, "codigo", "XXXXXXXX", "pin", PIN,
+                                    "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))))
+                    .andExpect(status().isUnauthorized());
+        }
+        loginUsuario(telefono, PIN).andExpect(status().isLocked());
+        reloj.adelantar(Duration.ofMinutes(16));
+        loginUsuario(telefono, PIN).andExpect(status().isUnauthorized());
+
+        String admin = "no-existe-" + UUID.randomUUID().toString().substring(0, 8);
+        for (int i = 0; i < 5; i++) {
+            loginAdmin(admin, "mala").andExpect(status().isUnauthorized());
+        }
+        loginAdmin(admin, "mala").andExpect(status().isLocked());
+    }
+
+    /** Una cuenta creada pero sin activar también acumula fallos de login (y se bloquea) en su fila. */
+    @Test
+    void loginDeCuentaSinActivarCuentaComoFallo() throws Exception {
+        UsuarioPrueba u = crearUsuario(TipoVehiculo.MOTO);
+        for (int i = 0; i < 5; i++) {
+            loginUsuario(u.telefono(), PIN).andExpect(status().isUnauthorized());
+        }
+        loginUsuario(u.telefono(), PIN).andExpect(status().isLocked());
+    }
+
     private org.springframework.test.web.servlet.ResultActions loginUsuario(String tel, String pin) throws Exception {
         return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                 .content(cuerpo(Map.of("telefono", tel, "pin", pin))));

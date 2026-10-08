@@ -42,6 +42,10 @@ public class PoliticaIntentos {
         return bloqueadoHasta != null && bloqueadoHasta.isAfter(clock.instant());
     }
 
+    public long getBloqueoMinutos() {
+        return bloqueoMinutos;
+    }
+
     public Estado registrarFallo(int intentosActuales) {
         int intentos = intentosActuales + 1;
         if (intentos >= maxIntentos) {

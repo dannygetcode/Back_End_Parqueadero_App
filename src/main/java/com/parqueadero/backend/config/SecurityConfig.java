@@ -23,6 +23,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,7 +49,12 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http,
                                     JwtService jwtService,
                                     ObjectMapper objectMapper,
-                                    @Value("${camara.api-key:}") String camaraApiKey) throws Exception {
+                                    Clock clock,
+                                    @Value("${camara.api-key:}") String camaraApiKey,
+                                    @Value("${seguridad.limite-ip.max-peticiones:10}") int limiteIpMax,
+                                    @Value("${seguridad.limite-ip.ventana-segundos:60}") long limiteIpVentana,
+                                    @Value("${seguridad.limite-ip.cabecera-ip-cliente:}") String cabeceraIpCliente)
+            throws Exception {
         http
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
@@ -89,6 +96,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/camaras").hasAnyRole(ADMIN, USUARIO)
                         .requestMatchers("/api/camaras", "/api/camaras/**").hasRole(ADMIN)
                         .anyRequest().authenticated())
+                .addFilterBefore(new LimitePorIpFilter(limiteIpMax, Duration.ofSeconds(limiteIpVentana),
+                        cabeceraIpCliente, clock, objectMapper), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ApiKeyAuthenticationFilter(camaraApiKey), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(new JwtAuthenticationFilter(jwtService), ApiKeyAuthenticationFilter.class);
 
