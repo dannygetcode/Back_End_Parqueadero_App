@@ -40,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final UsuarioRepository usuarioRepo;
     private final PasswordEncoder encoder;
     private final PoliticaIntentos intentos;
+    private final IntentosCuentasInexistentes inexistentes;
     private final JwtService jwtService;
     private final Clock clock;
 
@@ -48,7 +49,11 @@ public class AuthServiceImpl implements AuthService {
     public TokenDTO loginAdmin(AdminLoginRequest request) {
         Administrador admin = administradorRepo.bloquearPorUsuario(request.username()).orElse(null);
         if (admin == null) {
+            // Mismo comportamiento que una cuenta real (401 y, tras 5 fallos, 423): no revela qué usuarios existen.
+            String clave = "A:" + request.username();
+            inexistentes.exigirNoBloqueado(clave);
             encoder.matches(request.password(), hashRelleno());
+            inexistentes.registrarFallo(clave);
             throw NegocioException.noAutenticado(MSG_ADMIN);
         }
         intentos.exigirNoBloqueado(admin.getBloqueadoHasta());
@@ -67,11 +72,17 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(noRollbackFor = NegocioException.class)
     public TokenDTO loginUsuario(LoginUsuarioDTO request) {
         Usuario u = usuarioRepo.bloquearPorTelefono(request.telefono()).orElse(null);
-        if (u == null || !u.isValidado() || u.getPinHash() == null) {
-            encoder.matches(request.pin(), hashRelleno());
+        if (u == null) {
+            falloCuentaInexistente(request.telefono(), request.pin());
             throw NegocioException.noAutenticado(MSG_LOGIN);
         }
         intentos.exigirNoBloqueado(u.getBloqueadoHasta());
+        if (!u.isValidado() || u.getPinHash() == null) {
+            // Cuenta sin activar: cuenta como fallo en su propia fila, igual que un PIN incorrecto.
+            encoder.matches(request.pin(), hashRelleno());
+            registrarFallo(u);
+            throw NegocioException.noAutenticado(MSG_LOGIN);
+        }
         if (!encoder.matches(request.pin(), u.getPinHash())) {
             registrarFallo(u);
             throw NegocioException.noAutenticado(MSG_LOGIN);
@@ -89,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
         }
         Usuario u = usuarioRepo.bloquearPorTelefono(request.telefono()).orElse(null);
         if (u == null) {
-            encoder.matches(request.codigo(), hashRelleno());
+            falloCuentaInexistente(request.telefono(), request.codigo());
             throw NegocioException.noAutenticado(MSG_ACTIVAR);
         }
         intentos.exigirNoBloqueado(u.getBloqueadoHasta());
@@ -137,6 +148,17 @@ public class AuthServiceImpl implements AuthService {
             hashRelleno = encoder.encode("relleno-" + System.nanoTime());
         }
         return hashRelleno;
+    }
+
+    /**
+     * Teléfono desconocido: igual tiempo (BCrypt de relleno) y mismo contador que una cuenta real, compartido entre
+     * login y activación como lo está la fila de un usuario. 423 si ya acumuló los fallos del bloqueo.
+     */
+    private void falloCuentaInexistente(String telefono, String credencial) {
+        String clave = "U:" + telefono;
+        inexistentes.exigirNoBloqueado(clave);
+        encoder.matches(credencial, hashRelleno());
+        inexistentes.registrarFallo(clave);
     }
 
     private void registrarFallo(Usuario u) {

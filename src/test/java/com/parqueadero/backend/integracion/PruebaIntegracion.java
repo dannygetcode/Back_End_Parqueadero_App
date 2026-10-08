@@ -47,7 +47,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "admin.password=clave-admin-pruebas",
         "camara.api-key=clave-camara-pruebas-0123456789abcdef",
         "ocr.service.url=http://127.0.0.1:9",
-        "cors.origenes=http://localhost:5500"
+        "cors.origenes=http://localhost:5500",
+        // Todas las peticiones de MockMvc llegan desde 127.0.0.1: el límite por IP se prueba aparte (LimitePorIpIT).
+        "seguridad.limite-ip.max-peticiones=100000"
 })
 @AutoConfigureMockMvc
 @Import(PruebaIntegracion.RelojDePruebas.class)

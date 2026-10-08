@@ -14,7 +14,7 @@ Problemas del código actual (verificados en el fuente, commit 7f815d8):
   (que **crea** usuarios), `/uploads/**` y los GET/POST/PUT de `/api/camaras/**`.
 - El PIN es de 4 dígitos y se guarda y se devuelve en claro (`UsuarioDTO.pin`, en `listarTodos` y `/yo`).
 - `AdminController` compara la contraseña en claro con `admin.password`; responde el token como texto plano.
-- Sin límite de intentos.
+- Sin límite de intentos (resuelto: bloqueo por cuenta y límite por IP, ver Decisión).
 
 Decisiones del dueño: alta solo por admin; código de validación entregado por el admin; PIN de 6 dígitos con
 BCrypt; bloqueo de 15 min tras 5 fallos; JWT con `sub` = id y claim `rol`; un solo admin con contraseña BCrypt
@@ -65,6 +65,28 @@ desde variables de entorno; Next.js usará BFF con cookie httpOnly en una fase p
 - El contador es atómico: login, activación, cambio de PIN y login del admin leen la fila con
   `SELECT ... FOR UPDATE` (`@Lock(PESSIMISTIC_WRITE)`), así que los intentos simultáneos sobre la misma cuenta se
   serializan y ninguno pierde su incremento (con 20 intentos paralelos: 5 se evalúan y bloquean, 15 reciben 423).
+- **Respuesta uniforme para cuentas inexistentes** (elección: simular el bloqueo). Un teléfono o un usuario de admin
+  que no existen se comportan igual que una cuenta real: 401 genérico y, tras 5 fallos, 423 durante 15 min. El
+  contador de los inexistentes vive en memoria (`IntentosCuentasInexistentes`, sin crear filas por identificadores
+  inventados, acotado a 10.000 claves) y se comparte entre login y activación, como la fila de un usuario. Así la
+  diferencia 401/423 no permite enumerar cuentas. Se descartó "siempre 401 hasta que el bloqueo aplique" porque el
+  423 es útil para el usuario legítimo y, en cualquier caso, también delataría la cuenta en cuanto se aplicara.
+  Una cuenta creada pero sin activar también suma fallos de login en su fila. Limitación aceptada: tras reiniciar el
+  backend, los contadores en memoria empiezan de cero (los reales persisten); no es observable desde fuera.
+
+**Límite por IP** (`LimitePorIpFilter`): en `POST /api/admin/login`, `/api/auth/login` y `/api/auth/activar`, como
+mucho `seguridad.limite-ip.max-peticiones` (10) peticiones por IP y ruta en una ventana deslizante de
+`seguridad.limite-ip.ventana-segundos` (60 s), en memoria. Al superarlo: 429 `ProblemDetail` con `Retry-After`, sin
+llegar a comprobar la credencial. Detrás de un proxy inverso se configura `seguridad.limite-ip.cabecera-ip-cliente`
+(p. ej. `X-Real-IP`, que el proxy debe sobrescribir; de una lista tipo `X-Forwarded-For` se toma el último
+elemento). Es por instancia: con varias réplicas haría falta un almacén compartido (Redis/Bucket4j).
+
+**Escenario de DoS contra el admin**: como el bloqueo es por cuenta, cualquiera que conozca el usuario del admin puede
+dejarlo bloqueado 15 min con 5 intentos (y repetirlo). Mitigaciones actuales: el límite por IP frena la fuerza bruta
+y obliga a un atacante a rotar IPs para sostener el bloqueo; el usuario del admin no es público; el backend se publica
+por defecto solo en `127.0.0.1` (compose) y el panel es de uso interno. Riesgo aceptado para Fase 1. Si se observa,
+opciones: bloquear por par (cuenta, IP) en lugar de por cuenta, segundo factor para el admin o restringir
+`/api/admin/login` a la red interna en el proxy.
 
 **Admin** (actualizado en la implementación, resolución del orquestador): tabla `administrador` (`usuario` único,
 `password_hash` BCrypt, `intentos_fallidos`, `bloqueado_hasta`) en V1. Al arrancar, si la tabla está vacía, se crea
@@ -91,7 +113,8 @@ desactivado en el backend (la protección CSRF va en el BFF, con `SameSite=Stric
 - **Refresh tokens**: añaden tabla, rotación y revocación. Se reconsidera si 12 h resulta incómodo en la app.
 - **Admin solo por variables de entorno con `ADMIN_PASSWORD_HASH`** (propuesta inicial de este ADR): sustituida por
   la tabla `administrador`, que persiste el bloqueo, da un `sub` numérico homogéneo y admite más admins sin cambios.
-- **Bloqueo por IP con Bucket4j/Redis**: no hace falta con 7 usuarios. El bloqueo por cuenta basta.
+- **Bloqueo por IP con Bucket4j/Redis**: con una sola instancia basta una ventana deslizante en memoria (sin
+  dependencias nuevas). Se reconsidera con varias réplicas.
 
 ## Consecuencias
 
