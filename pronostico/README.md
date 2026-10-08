@@ -101,3 +101,9 @@ Advertencias honestas: la ventana de 12 semanas y la mediana se eligieron mirand
 asi que la mejora de 5% esta ligeramente sobreestimada; con la ventana de 26 semanas y la media el modelo **no** gana al ingenuo
 (MAE 0.562 vs 0.507). El Brier de "carros llenos" no es informativo: en el historico simulado nunca se llenaron los 6 cupos
 (maximo 4). En vacancia, n=66 con 92% de renovaciones no permite distinguir el modelo de una tasa constante.
+
+## Deuda conocida
+- La cuenta de BD que usa este servicio todavía no es de solo lectura (hoy comparte las credenciales de la aplicación;
+  solo ejecuta SELECT y abre la conexión en modo `read_only`). Pendiente: un rol con permisos únicamente de SELECT.
+- Dependencias: `requirements.txt` es producción; las de prueba están en `requirements-dev.txt`.
+- La lectura de `RAIZ_REPO/.env` como respaldo local solo ocurre con `PRONOSTICO_LEER_DOTENV=1`.
