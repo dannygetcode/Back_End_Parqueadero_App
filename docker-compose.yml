@@ -50,7 +50,8 @@ services:
       LIMITE_IP_VENTANA_SEGUNDOS: ${LIMITE_IP_VENTANA_SEGUNDOS:-60}
       LIMITE_IP_CABECERA: ${LIMITE_IP_CABECERA:-}
     ports:
-      - "${SERVER_PORT:-8080}:8080"
+      # Por defecto solo el host local; para exponerlo a la red: BIND_ADDRESS=0.0.0.0 (y TLS con un proxy, ver README).
+      - "${BIND_ADDRESS:-127.0.0.1}:${SERVER_PORT:-8080}:8080"
     volumes:
       - uploads:/app/uploads
     healthcheck:

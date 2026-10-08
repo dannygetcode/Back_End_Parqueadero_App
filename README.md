@@ -41,6 +41,10 @@ Servicios: `db` (Postgres, healthcheck), `ocr` (solo red interna), `backend` (pu
 de referencia: 7 cupos, tarifas, puerta y camara simulada) y se crea el administrador.
 La BD no se publica al host; para inspeccionarla anade temporalmente `ports: ["127.0.0.1:5432:5432"]` al servicio `db`.
 
+El backend se publica solo en `127.0.0.1` (variable `BIND_ADDRESS` para cambiarlo). **TLS:** el backend habla HTTP;
+en produccion hay que ponerlo detras de un proxy inverso (nginx, Caddy, un balanceador) que termine HTTPS, no exponer
+el puerto 8080 directamente, y configurar `LIMITE_IP_CABECERA` con la cabecera de IP real del proxy.
+
 ## Verificar
 - `docker compose ps` (los tres servicios Up; db y backend healthy)
 - `docker compose logs backend | grep -E "Successfully applied|Started"`
