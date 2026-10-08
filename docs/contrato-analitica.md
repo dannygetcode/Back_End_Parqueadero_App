@@ -11,8 +11,14 @@ Para quien programa el panel. Todos los endpoints son `GET`, de solo lectura, y 
 - Fechas ISO-8601. Los instantes salen con el desfase de `America/Bogota` (`-05:00`); los parámetros `desde`,
   `hasta` son fechas `YYYY-MM-DD` inclusivas en esa zona. Los campos `zonaHoraria` lo repiten.
 - Montos en COP enteros. Series ordenadas de forma ascendente por fecha.
-- Rangos (`desde`/`hasta`): por omisión `hasta` = hoy y `desde` = `hasta - 6 días`. Más de 400 días, `desde > hasta`,
-  una fecha mal escrita o una granularidad inválida responden 400 (`ProblemDetail`).
+- Rangos (`desde`/`hasta`): por omisión `hasta` = hoy y `desde` = `hasta - 6 días`. Se rechaza (400, `ProblemDetail`)
+  si hay más de 400 días entre los extremos contando ambos (es decir, `hasta - desde + 1 > 400`; 400 días exactos
+  sí se aceptan), si `desde > hasta`, con una fecha mal escrita o una granularidad inválida.
+- `incluirSimulados` en Spring usa la conversión laxa de booleanos: `true/on/yes/1` y `false/off/no/0` sin distinguir
+  mayúsculas; vacío equivale a omitido (`false`); cualquier otro valor (`abc`) responde 400. El proxy de pronóstico
+  reenvía al servicio Python siempre `true` o `false` ya normalizados.
+- Con `incluirSimulados=true` los endpoints de Spring **suman** reales y simulados; el servicio de pronóstico usa
+  **solo** simulados (nunca mezcla). Los totales de Spring con `true` incluyen por tanto los pocos eventos reales.
 - Privacidad: no hay teléfonos, nombres ni placas; solo `usuarioId` y código de cupo donde se indica. La ocupación
   nunca se cruza con la placa.
 - Censura: una ENTRADA permitida sin SALIDA dentro de 24 h se marca `censurada`; su ocupación se corta a las 24 h
@@ -87,7 +93,9 @@ usuarios que estuvieron dentro en esa celda (solo el número).
 Parámetros: `anio` (por omisión el actual; 2000 a 2200), `incluirSimulados`. (RF-52) Suma de `monto_confirmado` de
 pagos APROBADOS con monto mayor que 0 (las cortesías de 0 no cuentan), por mes de registro del pago y tipo de
 vehículo. Siempre 12 meses (con ceros). `tarifaVigente` es la tarifa mensual del tipo el día 1 del mes, para anotar
-el salto de tarifa de 2026 (carro 64.000 a 80.000, moto 8.000 a 10.000). `acumulado` es el total acumulado hasta ese
+el salto de tarifa de 2026 (carro 64.000 a 80.000, moto 8.000 a 10.000). Un año sin pagos devuelve los 12 meses en
+cero, pero `tarifaVigente` sigue la tarifa del día 1 y es 0 si ese año aún no había ninguna tarifa (p. ej. años
+anteriores a la primera tarifa registrada). `acumulado` es el total acumulado hasta ese
 mes. `tarifas` lista las tarifas que rigieron en el año.
 
 ```json
@@ -138,6 +146,11 @@ vehículo (por día de la salida). `porTipo` tiene una fila por tipo; `porTipoYD
 entrada (`diaSemana` 1 a 7), omitiendo las vacías. `histogramaHoraEntrada` siempre trae 24 elementos e incluye las
 entradas censuradas.
 
+Limitación conocida (< 0,2 %): `visitas` cuenta también las estancias en curso recientes (vehículo aún dentro, con
+menos de 24 h, no censurado; su duración se mide hasta ahora) y, con `incluirSimulados=true`, las visitas reales.
+Por eso difiere de un SQL que solo empareja ENTRADA-SALIDA cerradas de filas simuladas (en la demo: 1.457 en la API
+contra 1.452 de pares cerrados simulados + 1 abierta simulada + 4 reales). No es un error de emparejamiento.
+
 ```json
 {
   "desde": "2025-09-10", "hasta": "2026-10-08", "zonaHoraria": "America/Bogota", "incluirSimulados": true,
@@ -183,6 +196,9 @@ p10-p90 de 88 % (nominal 80 %). Vacancia: Brier 0.0692 contra 0.0705 de una tasa
 de renovaciones). Llegadas: sin backtest, no validado. Detalle del método en `pronostico/README.md`.
 
 ### GET /api/analitica/pronostico/vacancia?incluirSimulados=true
+Campos adicionales a los del ejemplo: `nota` (texto fijo que explica probabilidad y p10/p90),
+`metricas.generadoEn` (cuándo se corrió el backtest) y `metricas.resumen.tasa_renovacion_observada` (0.9242 en el
+backtest simulado). `detalle` incluye también usuarios en estado VENCIDO (con su fecha de liberación ya cumplida).
 Probabilidad de que haya **al menos un cupo libre** del tipo (`CARRO` y `MOTO` en `porTipo`) en `hoy + dias`
 (`probabilidades` trae 7, 15, 30, 60 y 90 días), con `p10`-`p90` por la incertidumbre de pocos datos por usuario.
 Si hay cupos sin titular la probabilidad es 1. `detalle` es por titular: `pRenovar` y fecha de liberación potencial.
@@ -203,7 +219,18 @@ Ejemplo (CARRO, abreviado):
 ### GET /api/analitica/pronostico/ocupacion?horizonteDias=7&incluirSimulados=true
 Carros dentro por hora para los próximos `horizonteDias` (1 a 14, por defecto 7) desde hoy 00:00 hora local. Por hora:
 `mediana` (pronóstico puntual), `media`, `p10`/`p90` (cuantiles empíricos), `probLleno` (P(carros >= capacidad)) y
-`observaciones` usadas. Sin eventos suficientes: `datosInsuficientes: true` y `dias: []`.
+`observaciones` usadas y `suficiente`.
+
+Suficiencia de datos: la respuesta es válida solo con al menos 4 semanas de historia (`minSemanasHistoria`, variable
+`MIN_SEMANAS_OCUPACION`) y, por hora del perfil, con al menos 3 observaciones (`minObservacionesHora`,
+`MIN_OBS_HORA`). Si falta historia, `datosInsuficientes: true` y todas las horas traen `suficiente: false`; si solo
+faltan observaciones en una hora, esa hora trae `suficiente: false`. En ambos casos `mediana`, `media`, `p10`, `p90` y
+`probLleno` son `null` explícito (nunca valores inventados) y `observaciones` conserva el conteo real. Sin ningún
+evento: `datosInsuficientes: true`, `semanasHistoria: 0` y `dias: []`. Los campos numéricos de una hora suficiente no
+son nulos. `metricas.resumen` trae `n_origenes`, `n_horas`, `mae_modelo`, `mae_media`, `mae_baseline_semana_pasada`,
+`mejora_relativa_vs_baseline`, `cobertura_p10_p90`, `cobertura_nominal`, `brier_lleno_modelo`, `brier_lleno_baseline`
+y `frecuencia_lleno_observada`. Advertencia: en el backtest simulado la ocupación nunca llegó a la capacidad
+(`frecuencia_lleno_observada` = 0), así que los Brier de `probLleno` no son informativos.
 
 ```json
 {"generadoEn":"2026-10-08T17:28:37-05:00","versionModelo":"pronostico-1.0.0","incluyeSimulados":true,
@@ -213,10 +240,15 @@ Carros dentro por hora para los próximos `horizonteDias` (1 a 14, por defecto 7
 ```
 
 ### GET /api/analitica/pronostico/llegadas?incluirSimulados=true
-Por usuario con cupo (sin placa): próximo día con probabilidad de venir >= 0.5 (hoy solo si aún no entró y no pasó su
+Envoltorio: `generadoEn`, `versionModelo`, `incluyeSimulados`, `metricas` (aquí `resumen` es solo
+`{validado: false, nota}`), `ventanaSemanas` (8), `nota` y `usuarios[]` (ordenado por código de cupo; incluye a los
+usuarios en estado VENCIDO y excluye a los dados de baja). Por usuario con cupo (sin placa): próximo día con probabilidad de venir >= 0.5 (hoy solo si aún no entró y no pasó su
 hora p75; si ningún día llega a 0.5 devuelve el más probable con `alcanzaUmbral50: false`), hora de la primera entrada
 (`horaMediana` y `horaP25`-`horaP75`, mismo día de la semana, últimas 8 semanas) y `tiempoFueraMedianaHoras` entre
-visitas (90 días). Con menos de 3 días con entrada: `datosInsuficientes: true` y horas `null`. Ejemplo de un elemento:
+visitas (90 días). Con menos de 3 días con entrada: `datosInsuficientes: true` y horas `null`.
+`diasObservados` cuenta solo los días de esa ventana desde el primer día con datos reales del conjunto (no el tamaño
+de la ventana); con menos de 3 días observados `probabilidadVenir` es `null` y, si ningún día evaluable queda,
+`proxima` es `null` (también con `tiempoFueraMedianaHoras: null` y `visitasConsideradas: 0` sin visitas). Ejemplo de un elemento:
 
 ```json
 {"usuarioId":25,"cupo":"C1","tipoVehiculo":"CARRO","estado":"ACTIVO",
