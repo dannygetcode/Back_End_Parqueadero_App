@@ -163,14 +163,64 @@ actual (1 a 12). `visitasMes`: entradas permitidas del mes. `permanenciaPromedio
  "visitasMes": 6, "permanenciaPromedioMin": 612.5, "horaHabitualLlegada": "07:45"}
 ```
 
-## GET /api/analitica/pronostico (pendiente)
+## Pronóstico: /api/analitica/pronostico/* (RF-54)
 
-No implementado en este paso (RF-54); lo servirá el servicio Python detrás de Spring (que autentica y reenvía).
-Contrato esperado, rol ADMIN: `?horizonteDias=7&incluirSimulados=true`.
+Rol ADMIN. Proxy de Spring hacia el servicio Python (FastAPI, solo red interna, sin autenticación propia). Spring
+autentica, reenvía **solo** `incluirSimulados` y `horizonteDias` (los demás parámetros se ignoran) y devuelve el JSON
+del servicio tal cual. Timeouts: 2 s de conexión y 8 s de lectura. Errores: `400` si `horizonteDias` no es un entero
+de 1 a 14 o `incluirSimulados` no es booleano; `503` (ProblemDetail, `codigo: PRONOSTICO_NO_DISPONIBLE`) si el servicio
+falla, no responde o tarda, sin detalles internos. El servicio cachea 3 h en memoria.
+
+Comunes a las tres respuestas: `generadoEn` (hora Colombia, ISO-8601), `versionModelo`, `incluyeSimulados` y `metricas`
+(`disponible`, `origenDatos`, `generadoEn`, `resumen`). Con `incluirSimulados=true` se usan **solo** filas simuladas
+(nunca se mezclan con las reales; por defecto `false`, solo reales). Las respuestas no incluyen teléfonos, nombres ni
+placas: solo `usuarioId` y código de cupo.
+
+**Métricas y limitaciones.** Las `metricas` salen de un backtest sobre datos **simulados** (`origenDatos: "simulado"`):
+no son la precisión en producción. Ocupación: MAE 0.480 carros/hora contra 0.507 del ingenuo (misma hora de la semana
+pasada), mejora de ~5 % ligeramente sobreestimada porque la ventana se eligió mirando el mismo backtest; cobertura
+p10-p90 de 88 % (nominal 80 %). Vacancia: Brier 0.0692 contra 0.0705 de una tasa constante, empate técnico (n=66, 92 %
+de renovaciones). Llegadas: sin backtest, no validado. Detalle del método en `pronostico/README.md`.
+
+### GET /api/analitica/pronostico/vacancia?incluirSimulados=true
+Probabilidad de que haya **al menos un cupo libre** del tipo (`CARRO` y `MOTO` en `porTipo`) en `hoy + dias`
+(`probabilidades` trae 7, 15, 30, 60 y 90 días), con `p10`-`p90` por la incertidumbre de pocos datos por usuario.
+Si hay cupos sin titular la probabilidad es 1. `detalle` es por titular: `pRenovar` y fecha de liberación potencial.
+Ejemplo (CARRO, abreviado):
 
 ```json
-{
-  "horizonteDias": 7, "generadoEn": "2026-10-08T17:30:00-05:00", "modelo": "pendiente",
-  "serie": [{"inicio": "2026-10-09T08:00:00-05:00", "carro": 2.4, "moto": 0.3, "bajo": 1.5, "alto": 3.4}]
-}
+{"generadoEn":"2026-10-08T17:28:26-05:00","versionModelo":"pronostico-1.0.0","incluyeSimulados":true,
+ "metricas":{"disponible":true,"origenDatos":"simulado","resumen":{"n":66,"brier_modelo":0.0692,"brier_baseline_tasa_constante":0.0705,"logloss_modelo":0.2641,"logloss_baseline_tasa_constante":0.2714,"horizonte_dias":30}},
+ "parametros":{"graciaDias":5,"priorMedia":0.85,"priorPeso":10.0,"periodoDias":30},
+ "porTipo":{"CARRO":{"capacidad":6,"titulares":6,"cuposSinAsignar":0,
+   "probabilidades":[{"dias":7,"fecha":"2026-10-15","probabilidad":0.271,"p10":0.133,"p90":0.429},
+                     {"dias":30,"fecha":"2026-11-07","probabilidad":0.553,"p10":0.389,"p90":0.715}],
+   "primeraFechaProbMayorIgual50":"2026-11-07",
+   "detalle":[{"usuarioId":25,"cupo":"C1","estado":"ACTIVO","fechaFin":"2026-10-23","fechaLiberacionPotencial":"2026-10-28",
+               "pRenovar":0.929,"renovacionesObservadas":11,"renovacionesATiempo":11}]}}}
+```
+
+### GET /api/analitica/pronostico/ocupacion?horizonteDias=7&incluirSimulados=true
+Carros dentro por hora para los próximos `horizonteDias` (1 a 14, por defecto 7) desde hoy 00:00 hora local. Por hora:
+`mediana` (pronóstico puntual), `media`, `p10`/`p90` (cuantiles empíricos), `probLleno` (P(carros >= capacidad)) y
+`observaciones` usadas. Sin eventos suficientes: `datosInsuficientes: true` y `dias: []`.
+
+```json
+{"generadoEn":"2026-10-08T17:28:37-05:00","versionModelo":"pronostico-1.0.0","incluyeSimulados":true,
+ "metricas":{"disponible":true,"origenDatos":"simulado","resumen":{"mae_modelo":0.4801,"mae_baseline_semana_pasada":0.5065,"cobertura_p10_p90":0.8804,"cobertura_nominal":0.8,"n_horas":7224}},
+ "tipoVehiculo":"CARRO","capacidad":6,"horizonteDias":1,"datosInsuficientes":false,"semanasHistoria":51.8,"ventanaSemanas":12,
+ "dias":[{"fecha":"2026-10-08","horas":[{"hora":8,"mediana":2.0,"media":2.17,"p10":1.0,"p90":3.0,"probLleno":0.038,"observaciones":12}]}]}
+```
+
+### GET /api/analitica/pronostico/llegadas?incluirSimulados=true
+Por usuario con cupo (sin placa): próximo día con probabilidad de venir >= 0.5 (hoy solo si aún no entró y no pasó su
+hora p75; si ningún día llega a 0.5 devuelve el más probable con `alcanzaUmbral50: false`), hora de la primera entrada
+(`horaMediana` y `horaP25`-`horaP75`, mismo día de la semana, últimas 8 semanas) y `tiempoFueraMedianaHoras` entre
+visitas (90 días). Con menos de 3 días con entrada: `datosInsuficientes: true` y horas `null`. Ejemplo de un elemento:
+
+```json
+{"usuarioId":25,"cupo":"C1","tipoVehiculo":"CARRO","estado":"ACTIVO",
+ "proxima":{"fecha":"2026-10-08","diaSemana":"jueves","diasObservados":8,"diasConEntrada":8,"probabilidadVenir":0.944,
+            "horaMediana":"20:40","horaP25":"19:56","horaP75":"21:06","datosInsuficientes":false,"alcanzaUmbral50":true},
+ "tiempoFueraMedianaHoras":14.0,"visitasConsideradas":89}
 ```

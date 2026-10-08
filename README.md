@@ -1,6 +1,6 @@
 # Backend - Parqueadero
 
-API REST (Spring Boot 3.5, Java 17) + servicio OCR (Flask/Tesseract) + PostgreSQL 15.
+API REST (Spring Boot 3.5, Java 17) + servicio OCR (Flask/Tesseract) + servicio de pronostico (FastAPI) + PostgreSQL 15.
 Diseño de la Fase 1: `docs/arquitectura/fase-1-modelo.md` y ADR en `docs/adr/`. Cambios para la app y el panel:
 `docs/cambios-de-contrato-fase-1.md`.
 
@@ -23,6 +23,8 @@ Todo se configura por variables de entorno (ver `.env.example`). Los secretos no
 | `CORS_ORIGENES` | no | Origenes permitidos separados por comas. Por defecto `http://localhost:5500,http://localhost:3000` |
 | `SERVER_PORT` | no | Puerto publicado en el host (8080) |
 | `SERVER_ADDRESS` | no | Fuera de Docker: `127.0.0.1` por defecto; `0.0.0.0` solo si hay que exponerlo en la LAN |
+| `GRACIA_DIAS` | no | Dias de gracia (5). Backend y pronostico leen el mismo valor |
+| `PRONOSTICO_URL` | si (compose la fija) | URL del servicio de pronostico; sin ella el backend no arranca |
 | `DB_URL`, `OCR_SERVICE_URL`, `UPLOAD_DIR` | fuera de Docker | Compose ya los fija para los contenedores |
 | `TESSERACT_CMD` | OCR fuera de Docker | Ruta de `tesseract.exe` en Windows |
 
@@ -36,7 +38,8 @@ La BD usa un volumen **externo** para que `docker compose down -v` no la borre. 
 docker volume create backend_pgdata
 docker compose up -d --build
 ```
-Servicios: `db` (Postgres, healthcheck), `ocr` (solo red interna), `backend` (puerto `SERVER_PORT`, healthcheck en
+Servicios: `db` (Postgres, healthcheck), `ocr` (solo red interna), `pronostico` (solo red interna, healthcheck en
+`/salud`), `backend` (puerto `SERVER_PORT`, healthcheck en
 `/api/ping`). Al arrancar, Flyway aplica las migraciones de `src/main/resources/db/migration` (V1 esquema, V2 datos
 de referencia: 7 cupos, tarifas, puerta y camara simulada) y se crea el administrador.
 La BD no se publica al host; para inspeccionarla anade temporalmente `ports: ["127.0.0.1:5432:5432"]` al servicio `db`.
@@ -45,11 +48,25 @@ El backend se publica solo en `127.0.0.1` (variable `BIND_ADDRESS` para cambiarl
 en produccion hay que ponerlo detras de un proxy inverso (nginx, Caddy, un balanceador) que termine HTTPS, no exponer
 el puerto 8080 directamente, y configurar `LIMITE_IP_CABECERA` con la cabecera de IP real del proxy.
 
+### Servicio de pronostico
+`pronostico/` (FastAPI, ver `pronostico/README.md`) lee la BD y calcula vacancia, ocupacion y llegadas. Compose lo
+construye y lo conecta por la red interna (`http://pronostico:8000`); el backend depende de que este healthy y lo expone
+a los ADMIN en `/api/analitica/pronostico/*` (contrato: `docs/contrato-analitica.md`).
+- **No tiene autenticacion y no se publica al host** (sin `ports`): quien llegue a su puerto lee los pronosticos. No
+  anadir `ports` ni ponerlo detras de un tunel; el unico cliente es el backend.
+- Comparte las credenciales de BD del `.env` (solo hace `SELECT`, en transaccion de solo lectura).
+- **Mejora pendiente:** crear un rol de Postgres de solo lectura (`GRANT SELECT`) para este servicio en lugar de la
+  cuenta de la aplicacion; requiere gestionar su contrasena (nueva variable en `.env`), por eso no esta hecho aun.
+- Si el servicio cae o tarda mas de 8 s, el backend responde 503 en esos endpoints; el resto de la API no se afecta.
+- Revertir: quitar el servicio `pronostico`, su `depends_on` y `PRONOSTICO_URL` de `docker-compose.yml`, y el
+  controlador/propiedades `pronostico.service.*` del backend (es obligatoria: sin quitarla no arranca).
+
 ## Verificar
-- `docker compose ps` (los tres servicios Up; db y backend healthy)
+- `docker compose ps` (db, ocr, pronostico y backend Up; db, pronostico y backend healthy; pronostico sin puertos publicados)
 - `docker compose logs backend | grep -E "Successfully applied|Started"`
 - `curl http://localhost:8080/api/ping`
 - Login del admin: `curl -X POST localhost:8080/api/admin/login -H "Content-Type: application/json" -d '{"username":"...","password":"..."}'`
+- Pronostico (con el token del admin): `curl -H "Authorization: Bearer $TOKEN" "localhost:8080/api/analitica/pronostico/vacancia?incluirSimulados=true"`; sin token da 401
 - Simulador de camara: `curl -X POST localhost:8080/api/accesos/lecturas -H "X-Api-Key: $CAMARA_API_KEY" -H "Content-Type: application/json" -d '{"placa":"ABC123"}'`
 
 ## Reset de la base de datos (cambio de esquema incompatible)
@@ -80,4 +97,4 @@ pero no la BD (volumen externo).
 
 ## CI
 `.github/workflows/ci.yml`: en cada push y pull request corre `./mvnw -B verify` con Java 17 (Testcontainers usa el
-Docker del runner). Permisos del token: `contents: read`.
+Docker del runner) y, en un job aparte, `pytest` de `pronostico/` y `simulador/` con Python 3.12. Permisos del token: `contents: read`.

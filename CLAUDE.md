@@ -29,7 +29,7 @@ Roles: P público, A ADMIN (JWT), U USUARIO (JWT, solo lo suyo), S SISTEMA (cabe
 - `accesos` — S/A: `POST lecturas` (simulador de cámara); A: listado, `ocupacion`; U: `mios`
 - `puerta` — A/U: GET estado, PUT interruptor (las aperturas generan `evento_acceso`)
 - `camaras` — GET A/U; POST/PUT A
-- `analitica` (Fase 4, solo lectura, todos con `incluirSimulados`) — A: `resumen`, `ocupacion`, `ocupacion/mapa-calor`, `ingresos`, `morosidad`, `permanencia`; U: `usuarios/yo/resumen`. Contrato: `docs/contrato-analitica.md`
+- `analitica` (Fase 4, solo lectura, todos con `incluirSimulados`) — A: `resumen`, `ocupacion`, `ocupacion/mapa-calor`, `ingresos`, `morosidad`, `permanencia`, `pronostico/vacancia|ocupacion|llegadas` (proxy al servicio FastAPI `pronostico/`, 503 si falla; env `PRONOSTICO_URL` obligatoria); U: `usuarios/yo/resumen`. Contrato: `docs/contrato-analitica.md`
 - Esquema solo por Flyway (`src/main/resources/db/migration`); entidades validadas con `ddl-auto=validate`.
 
 ## Reglas para trabajar aquí
