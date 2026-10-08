@@ -34,6 +34,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Query("select u from Usuario u where u.id = :id")
     Optional<Usuario> bloquearPorId(@Param("id") Long id);
 
+    /** Versión de credenciales (revocación de JWT). Vacío si no existe o nunca se fijó. */
+    @Query("select u.credencialesCambiadasEn from Usuario u where u.id = :id")
+    Optional<java.time.Instant> credencialesCambiadasEn(@Param("id") Long id);
+
     Optional<Usuario> findByCupoIdAndDadoDeBajaEnIsNullAndSimuladoFalse(Long cupoId);
 
     @Query("""

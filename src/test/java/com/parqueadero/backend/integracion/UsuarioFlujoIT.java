@@ -168,6 +168,30 @@ class UsuarioFlujoIT extends PruebaIntegracion {
                 .andExpect(jsonPath("$.estado").value("VENCIDO"));
     }
 
+    @Test
+    void tokenPrevioSeRechazaTrasCambiarPinYTrasBaja() throws Exception {
+        UsuarioPrueba u = crearUsuario(TipoVehiculo.CARRO);
+        activar(u);
+        String viejo = bearerUsuario(u.id());
+        mvc.perform(get("/api/usuarios/yo").header("Authorization", viejo)).andExpect(status().isOk());
+
+        reloj.adelantar(java.time.Duration.ofSeconds(2));
+        mvc.perform(put("/api/usuarios/yo/pin").header("Authorization", viejo)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo(Map.of("pinActual", PIN, "pinNuevo", "739104"))))
+                .andExpect(status().isNoContent());
+        mvc.perform(get("/api/usuarios/yo").header("Authorization", viejo)).andExpect(status().isUnauthorized());
+
+        reloj.adelantar(java.time.Duration.ofSeconds(2));
+        String nuevo = bearerUsuario(u.id());
+        mvc.perform(get("/api/usuarios/yo").header("Authorization", nuevo)).andExpect(status().isOk());
+
+        reloj.adelantar(java.time.Duration.ofSeconds(2));
+        mvc.perform(delete("/api/usuarios/" + u.id()).header("Authorization", bearerAdmin()))
+                .andExpect(status().isNoContent());
+        mvc.perform(get("/api/usuarios/yo").header("Authorization", nuevo)).andExpect(status().isUnauthorized());
+    }
+
     private MvcResult login(String telefono, String pin, int esperado) throws Exception {
         return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", telefono, "pin", pin))))

@@ -4,7 +4,11 @@ import com.parqueadero.backend.dto.*;
 import com.parqueadero.backend.entity.*;
 import com.parqueadero.backend.exception.NegocioException;
 import com.parqueadero.backend.repository.*;
+import com.parqueadero.backend.config.UsuarioAutenticado;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,7 @@ import java.util.Objects;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UsuarioServiceImpl.class);
     private static final SecureRandom RNG = new SecureRandom();
     private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -158,6 +163,7 @@ public class UsuarioServiceImpl implements UsuarioService {
                     throw NegocioException.invalido("El motivo de la suspensión es obligatorio");
                 }
                 u.setEstado(EstadoUsuario.SUSPENDIDO);
+                u.setCredencialesCambiadasEn(clock.instant());
                 u.setSuspendidoMotivo(dto.motivo().trim());
             }
             case REACTIVAR -> {
@@ -180,9 +186,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         Instant expira = clock.instant().plus(codigoHoras, ChronoUnit.HOURS);
         u.setCodigoValidacionHash(encoder.encode(codigo));
         u.setCodigoValidacionExpiraEn(expira);
+        u.setCredencialesCambiadasEn(clock.instant());
+        LOG.info("Código de validación regenerado: usuario={} por admin={} en {}", id, quienEjecuta(), clock.instant());
         u.setIntentosFallidos(0);
         u.setBloqueadoHasta(null);
         return new CodigoValidacionDTO(codigo, Fechas.local(expira));
+    }
+
+    private static String quienEjecuta() {
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null && auth.getPrincipal() instanceof UsuarioAutenticado q ? String.valueOf(q.id()) : "desconocido";
     }
 
     @Override
@@ -190,6 +203,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public void darDeBaja(Long id) {
         Usuario u = buscarVigente(id);
         u.setDadoDeBajaEn(clock.instant());
+        u.setCredencialesCambiadasEn(clock.instant());
         u.setCupo(null);
         u.setCodigoValidacionHash(null);
         u.setCodigoValidacionExpiraEn(null);
@@ -221,6 +235,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw NegocioException.noAutenticado("PIN actual incorrecto");
         }
         u.setPinHash(encoder.encode(dto.pinNuevo()));
+        u.setCredencialesCambiadasEn(clock.instant());
         u.setIntentosFallidos(0);
     }
 

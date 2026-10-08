@@ -78,6 +78,10 @@ public class Usuario {
     @Column(name = "dado_de_baja_en")
     private Instant dadoDeBajaEn;
 
+    /** Versión de credenciales (V3): los JWT emitidos antes de este instante se rechazan. */
+    @Column(name = "credenciales_cambiadas_en")
+    private Instant credencialesCambiadasEn;
+
     @CreationTimestamp
     @Column(name = "creado_en", nullable = false, updatable = false)
     private Instant creadoEn;

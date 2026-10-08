@@ -16,10 +16,10 @@ class EsquemaIT extends PruebaIntegracion {
     JdbcTemplate jdbc;
 
     @Test
-    void flywayAplicaV1yV2() {
+    void flywayAplicaV1aV3() {
         List<String> versiones = jdbc.queryForList(
                 "SELECT version FROM flyway_schema_history WHERE success ORDER BY installed_rank", String.class);
-        assertThat(versiones).containsExactly("1", "2");
+        assertThat(versiones).containsExactly("1", "2", "3");
     }
 
     @Test

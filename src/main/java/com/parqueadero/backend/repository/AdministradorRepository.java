@@ -16,4 +16,8 @@ public interface AdministradorRepository extends JpaRepository<Administrador, Lo
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from Administrador a where a.usuario = :usuario")
     Optional<Administrador> bloquearPorUsuario(@Param("usuario") String usuario);
+
+    /** Versión de credenciales (revocación de JWT). Vacío si no existe o nunca se fijó. */
+    @Query("select a.credencialesCambiadasEn from Administrador a where a.id = :id")
+    Optional<java.time.Instant> credencialesCambiadasEn(@Param("id") Long id);
 }

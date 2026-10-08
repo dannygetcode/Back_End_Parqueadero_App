@@ -119,6 +119,7 @@ public class AuthServiceImpl implements AuthService {
         u.setConsentimientoVersion(request.versionConsentimiento().trim());
         u.setCodigoValidacionHash(null);
         u.setCodigoValidacionExpiraEn(null);
+        u.setCredencialesCambiadasEn(ahora);
         u.setIntentosFallidos(0);
         u.setBloqueadoHasta(null);
     }

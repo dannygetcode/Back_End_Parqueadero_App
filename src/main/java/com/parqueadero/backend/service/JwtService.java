@@ -3,6 +3,8 @@ package com.parqueadero.backend.service;
 import com.parqueadero.backend.config.Rol;
 import com.parqueadero.backend.config.UsuarioAutenticado;
 import com.parqueadero.backend.dto.TokenDTO;
+import com.parqueadero.backend.repository.AdministradorRepository;
+import com.parqueadero.backend.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +18,7 @@ import java.security.Key;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
 
@@ -32,15 +35,19 @@ public class JwtService {
     private final Duration expiracionAdmin;
     private final Duration expiracionUsuario;
     private final Clock clock;
+    private final UsuarioRepository usuarioRepo;
+    private final AdministradorRepository administradorRepo;
 
     public JwtService(@Value("${jwt.secret}") String secret,
                       @Value("${jwt.expiracion.admin:4h}") Duration expiracionAdmin,
                       @Value("${jwt.expiracion.usuario:12h}") Duration expiracionUsuario,
-                      Clock clock) {
+                      Clock clock, UsuarioRepository usuarioRepo, AdministradorRepository administradorRepo) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expiracionAdmin = expiracionAdmin;
         this.expiracionUsuario = expiracionUsuario;
         this.clock = clock;
+        this.usuarioRepo = usuarioRepo;
+        this.administradorRepo = administradorRepo;
     }
 
     public TokenDTO generarToken(Long id, Rol rol) {
@@ -72,9 +79,28 @@ public class JwtService {
             if (rol == Rol.SISTEMA) {
                 return Optional.empty();
             }
-            return Optional.of(new UsuarioAutenticado(Long.valueOf(claims.getSubject()), rol));
+            Long id = Long.valueOf(claims.getSubject());
+            if (revocado(id, rol, claims.getIssuedAt())) {
+                return Optional.empty();
+            }
+            return Optional.of(new UsuarioAutenticado(id, rol));
         } catch (JwtException | IllegalArgumentException | NullPointerException ex) {
             return Optional.empty();
         }
+    }
+
+    /**
+     * Revocación (V3): el token se rechaza si se emitió antes del último cambio de credenciales de la cuenta.
+     * El iat del JWT tiene precisión de segundos, así que se compara contra ese cambio truncado a segundos
+     * (un login hecho en el mismo segundo del cambio sigue siendo válido).
+     */
+    private boolean revocado(Long id, Rol rol, Date emitido) {
+        if (emitido == null) {
+            return true;
+        }
+        Optional<Instant> cambio = rol == Rol.ADMIN
+                ? administradorRepo.credencialesCambiadasEn(id)
+                : usuarioRepo.credencialesCambiadasEn(id);
+        return cambio.map(c -> emitido.toInstant().isBefore(c.truncatedTo(ChronoUnit.SECONDS))).orElse(false);
     }
 }
