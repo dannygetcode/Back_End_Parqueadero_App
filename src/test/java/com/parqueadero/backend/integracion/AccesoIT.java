@@ -181,6 +181,25 @@ class AccesoIT extends PruebaIntegracion {
                 .andExpect(jsonPath("$.abierta").value(false));
     }
 
+    @Test
+    void antirreboteNoReutilizaEventoDeOtroOrigenNiAnteriorAUnCambioDelUsuario() throws Exception {
+        UsuarioPrueba u = crearUsuario(TipoVehiculo.CARRO);
+        // VENCIDO: la cámara recibe una denegación.
+        camara(u.placa()).andExpect(status().isForbidden()).andExpect(jsonPath("$.motivo").value("USUARIO_VENCIDO"));
+        // El estado cambia (cortesía -> ACTIVO) dentro de la ventana: se evalúa de nuevo, no es duplicado.
+        cortesia(u);
+        camara(u.placa()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultado").value("PERMITIDO"))
+                .andExpect(jsonPath("$.duplicado").value(false));
+        // Mismo vehículo, otro origen (apertura manual del admin) dentro de la ventana: se evalúa de nuevo.
+        mvc.perform(put("/api/puerta").header("Authorization", bearerAdmin())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo(Map.of("abierta", true, "placa", u.placa(), "tipo", "SALIDA"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.evento.origen").value("MANUAL_ADMIN"))
+                .andExpect(jsonPath("$.evento.duplicado").value(false));
+    }
+
     private ResultActions camara(String placa) throws Exception {
         return mvc.perform(post("/api/accesos/lecturas").header("X-Api-Key", API_KEY)
                 .contentType(MediaType.APPLICATION_JSON)

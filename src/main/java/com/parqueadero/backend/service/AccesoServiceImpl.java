@@ -96,8 +96,12 @@ public class AccesoServiceImpl implements AccesoService {
             Optional<EventoAcceso> ultimo = eventoRepo.findFirstByVehiculoIdOrderByOcurridoEnDescIdDesc(v.getId());
             // Anti-rebote: no se duplica una lectura reciente. Excepción: la apertura forzada del admin justo después
             // de una lectura denegada (el admin decide abrir igual) sí se registra.
+            // Tampoco se reutiliza un evento de otro origen, ni uno anterior a un cambio en el usuario (su estado pudo
+            // cambiar desde entonces): en esos casos las reglas se evalúan de nuevo.
             if (ultimo.isPresent()
                     && Duration.between(ultimo.get().getOcurridoEn(), ocurrido).abs().compareTo(antirrebote) < 0
+                    && ultimo.get().getOrigen() == lectura.origen()
+                    && !usuarioCambioDesde(v.getUsuario(), ultimo.get())
                     && !(lectura.forzar() && ultimo.get().getResultado() == ResultadoAcceso.DENEGADO)) {
                 return mapeos.evento(ultimo.get(), true);
             }
@@ -125,6 +129,11 @@ public class AccesoServiceImpl implements AccesoService {
             puerta.setAbiertaHasta(ahora.plus(apertura));
         }
         return mapeos.evento(e, false);
+    }
+
+    private static boolean usuarioCambioDesde(Usuario u, EventoAcceso evento) {
+        return u != null && u.getActualizadoEn() != null && evento.getRegistradoEn() != null
+                && u.getActualizadoEn().isAfter(evento.getRegistradoEn());
     }
 
     @Override
