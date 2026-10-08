@@ -230,7 +230,7 @@ def _nuevo_usuario(rng, n, cupo, ancla, usadas_placas, nombres_usados):
         ancla = ancla.replace(day=28)
     return UsuarioPlan(
         n=n, cupo_codigo=cupo["codigo"], tipo=tipo, nombre=nom[0], apellido=nom[1],
-        telefono=str(3000000000 + n), uso=rng.choice(PERFILES_USO) if tipo == "CARRO" else "mixto",
+        telefono=str(3000000000 + n), uso=rng.choices(PERFILES_USO, [0.5, 0.25, 0.25])[0] if tipo == "CARRO" else "mixto",
         pago="puntual", placa=placa_unica(rng, tipo, usadas_placas), marca=marca,
         color=rng.choice(COLORES), carroceria=carr, ancla=ancla)
 
