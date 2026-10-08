@@ -1,4 +1,5 @@
-# Stack de desarrollo. Requiere un archivo .env (copiar de .env.example).
+# Stack de desarrollo. Requiere un archivo .env (copiar de .env.example) y el volumen externo backend_pgdata
+# (docker volume create backend_pgdata).
 services:
   db:
     image: postgres:15
@@ -31,22 +32,38 @@ services:
       ocr:
         condition: service_started
     environment:
+      # Dentro del contenedor hay que escuchar en todas las interfaces; la exposicion la decide "ports".
+      SERVER_ADDRESS: 0.0.0.0
       DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       OCR_SERVICE_URL: http://ocr:5000
+      # Solo se usan si la tabla administrador esta vacia (se guarda el hash BCrypt).
       ADMIN_USERNAME: ${ADMIN_USERNAME}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      SPRING_SECURITY_PASSWORD: ${SPRING_SECURITY_PASSWORD}
+      CAMARA_API_KEY: ${CAMARA_API_KEY}
+      CORS_ORIGENES: ${CORS_ORIGENES:-http://localhost:5500,http://localhost:3000}
       UPLOAD_DIR: /app/uploads
+      # Limite por IP en logins y activacion (429). Detras de un proxy: LIMITE_IP_CABECERA=X-Real-IP.
+      LIMITE_IP_MAX_PETICIONES: ${LIMITE_IP_MAX_PETICIONES:-10}
+      LIMITE_IP_VENTANA_SEGUNDOS: ${LIMITE_IP_VENTANA_SEGUNDOS:-60}
+      LIMITE_IP_CABECERA: ${LIMITE_IP_CABECERA:-}
     ports:
-      - "${SERVER_PORT:-8080}:8080"
+      # Por defecto solo el host local; para exponerlo a la red: BIND_ADDRESS=0.0.0.0 (y TLS con un proxy, ver README).
+      - "${BIND_ADDRESS:-127.0.0.1}:${SERVER_PORT:-8080}:8080"
     volumes:
       - uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/api/ping || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
 
 volumes:
   pgdata:
     external: true
     name: backend_pgdata
+  # Comprobantes de pago: estado critico, se respalda junto con el pg_dump (ADR 0005).
   uploads:

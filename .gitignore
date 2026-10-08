@@ -38,3 +38,6 @@ build/
 .env
 .env.*
 !.env.example
+
+# Comprobantes subidos (datos personales): nunca en git. Ver ADR 0005.
+uploads/

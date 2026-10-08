@@ -1,63 +1,57 @@
 package com.parqueadero.backend.service;
 
 import com.parqueadero.backend.dto.CamaraDTO;
+import com.parqueadero.backend.dto.CamaraUsuarioDTO;
 import com.parqueadero.backend.entity.Camara;
+import com.parqueadero.backend.entity.Parqueadero;
+import com.parqueadero.backend.exception.NegocioException;
 import com.parqueadero.backend.repository.CamaraRepository;
+import com.parqueadero.backend.repository.ParqueaderoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CamaraServiceImpl implements CamaraService {
 
     private final CamaraRepository repo;
-
-    public CamaraServiceImpl(CamaraRepository repo) {
-        this.repo = repo;
-    }
+    private final ParqueaderoRepository parqueaderoRepo;
+    private final Mapeos mapeos;
 
     @Override
+    @Transactional(readOnly = true)
     public List<CamaraDTO> listarCamaras() {
-        return repo.findAll()
-                .stream()
-                .map(c -> CamaraDTO.builder()
-                        .id(c.getId())
-                        .nombre(c.getNombre())
-                        .url(c.getUrl())
-                        .activa(c.getActiva())
-                        .build())
-                .collect(Collectors.toList());
+        return repo.findAllByOrderByIdAsc().stream().map(mapeos::camara).toList();
     }
 
     @Override
-    public CamaraDTO actualizarEstado(Long id, Boolean activa) {
-        Camara cam = repo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cámara no encontrada"));
+    @Transactional(readOnly = true)
+    public List<CamaraUsuarioDTO> listarCamarasParaUsuario() {
+        return repo.findAllByOrderByIdAsc().stream()
+                .map(c -> new CamaraUsuarioDTO(c.getId(), c.getNombre(), c.isActiva()))
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public CamaraDTO actualizarEstado(Long id, boolean activa) {
+        Camara cam = repo.findById(id).orElseThrow(() -> NegocioException.noEncontrado("Cámara no encontrada"));
         cam.setActiva(activa);
-        Camara saved = repo.save(cam);
-        return CamaraDTO.builder()
-                .id(saved.getId())
-                .nombre(saved.getNombre())
-                .url(saved.getUrl())
-                .activa(saved.getActiva())
-                .build();
+        return mapeos.camara(cam);
     }
 
     @Override
+    @Transactional
     public CamaraDTO crearCamara(CamaraDTO dto) {
-        Camara cam = Camara.builder()
-                .nombre(dto.getNombre())
-                .url(dto.getUrl())
-                .activa(dto.getActiva())
-                .build();
-        cam = repo.save(cam);
-        return CamaraDTO.builder()
-                .id(cam.getId())
-                .nombre(cam.getNombre())
-                .url(cam.getUrl())
-                .activa(cam.getActiva())
-                .build();
+        Camara cam = new Camara();
+        cam.setParqueadero(parqueaderoRepo.getReferenceById(Parqueadero.PRINCIPAL));
+        cam.setNombre(dto.nombre().trim());
+        cam.setUrl(dto.url() == null || dto.url().isBlank() ? null : dto.url().trim());
+        cam.setActiva(dto.activa() == null || dto.activa());
+        cam.setSimulada(dto.simulada() == null || dto.simulada());
+        return mapeos.camara(repo.saveAndFlush(cam));
     }
-
 }

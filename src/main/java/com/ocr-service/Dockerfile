@@ -6,7 +6,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py .
-RUN useradd -r -u 10001 app
+RUN useradd -r -m -u 10001 app
 USER app
 ENV TESSERACT_CMD=tesseract
 EXPOSE 5000
