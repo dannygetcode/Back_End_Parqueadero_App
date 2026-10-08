@@ -11,6 +11,7 @@ API REST de un sistema de parqueadero: usuarios con placa, pagos con comprobante
 - Base de datos: `docker compose up -d db`
 - Correr: `./mvnw spring-boot:run` (puerto 8080)
 - Tests: `./mvnw verify` (unitarios + integración con Testcontainers; necesita Docker)
+- Datos simulados (Fase 2): `python simulador/generar.py --limpiar` y `python simulador/verificar.py` (ver `simulador/README.md`; la BD hay que publicarla temporalmente)
 - OCR: `pip install -r src/main/java/com/ocr-service/requirements.txt` y `python main.py` desde esa carpeta (necesita Tesseract instalado)
 
 ## Arquitectura

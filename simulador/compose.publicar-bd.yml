@@ -1,0 +1,7 @@
+# Override TEMPORAL solo para desarrollo: publica la BD en el loopback del host para que el simulador la alcance.
+# Uso: docker compose -f docker-compose.yml -f simulador/compose.publicar-bd.yml up -d db
+# Para volver a no publicarla: docker compose up -d db
+services:
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"
