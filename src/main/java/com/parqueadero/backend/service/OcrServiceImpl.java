@@ -2,13 +2,16 @@ package com.parqueadero.backend.service;
 
 import com.parqueadero.backend.config.OcrProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
 
 import java.util.Map;
 
@@ -19,13 +22,16 @@ public class OcrServiceImpl implements OcrService {
     private final String ocrUrl;
 
     public OcrServiceImpl(RestTemplateBuilder builder, OcrProperties props) {
-        this.rest = builder.build();
+        // Timeout de conexión y lectura (10 s por defecto, ADR 0005): si se supera, el pago queda con OCR FALLIDO.
+        this.rest = builder
+                .connectTimeout(props.getTimeout())
+                .readTimeout(props.getTimeout())
+                .build();
         this.ocrUrl = props.getUrl();
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Map<String, Object> parse(String filename, byte[] fileBytes) throws Exception {
+    public Map<String, Object> parse(String filename, byte[] fileBytes) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("image", new ByteArrayResource(fileBytes) {
             @Override
@@ -33,17 +39,10 @@ public class OcrServiceImpl implements OcrService {
                 return filename;
             }
         });
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
-
-        ResponseEntity<Map> response = rest.postForEntity(ocrUrl + "/ocr", request, Map.class);
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("OCR service error: " + response.getStatusCode());
-        }
-
-        return response.getBody();
+        return rest.exchange(ocrUrl + "/ocr", HttpMethod.POST, new HttpEntity<>(body, headers),
+                new ParameterizedTypeReference<Map<String, Object>>() {
+                }).getBody();
     }
-
 }

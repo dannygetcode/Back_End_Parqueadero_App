@@ -1,11 +1,7 @@
 package com.parqueadero.backend.dto;
 
-import lombok.*;
+import java.time.OffsetDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class PuertaDTO {
-    private Boolean abierta;
+/** Estado de la puerta; {@code evento} solo viene en la respuesta de PUT /api/puerta. */
+public record PuertaDTO(boolean abierta, OffsetDateTime abiertaHasta, EventoAccesoDTO ultimoEvento, EventoAccesoDTO evento) {
 }
