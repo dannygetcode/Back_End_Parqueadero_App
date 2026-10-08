@@ -10,7 +10,8 @@ from . import db, servicio
 from .cache import CacheTTL
 
 log = logging.getLogger("pronostico")
-app = FastAPI(title="Pronostico del parqueadero", version=cfg.VERSION_MODELO)
+app = FastAPI(title="Pronostico del parqueadero", version=cfg.VERSION_MODELO,
+              docs_url=None, redoc_url=None, openapi_url=None)
 cache = CacheTTL(cfg.CACHE_HORAS * 3600)
 
 
