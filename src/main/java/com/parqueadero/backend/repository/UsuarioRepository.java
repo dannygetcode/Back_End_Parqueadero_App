@@ -2,7 +2,9 @@ package com.parqueadero.backend.repository;
 
 import com.parqueadero.backend.entity.EstadoUsuario;
 import com.parqueadero.backend.entity.Usuario;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +19,20 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByTelefonoAndDadoDeBajaEnIsNullAndSimuladoFalse(String telefono);
 
     boolean existsByTelefonoAndDadoDeBajaEnIsNullAndSimuladoFalse(String telefono);
+
+    /**
+     * Como {@link #findByTelefonoAndDadoDeBajaEnIsNullAndSimuladoFalse} pero con SELECT ... FOR UPDATE: serializa los
+     * intentos de login/activación de una misma cuenta para que el contador de fallos no pierda incrementos (RF-07).
+     * Solo dentro de una transacción de escritura.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from Usuario u where u.telefono = :telefono and u.dadoDeBajaEn is null and u.simulado = false")
+    Optional<Usuario> bloquearPorTelefono(@Param("telefono") String telefono);
+
+    /** SELECT ... FOR UPDATE por id (cambio de PIN: comprobación del PIN actual y contador de fallos). */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from Usuario u where u.id = :id")
+    Optional<Usuario> bloquearPorId(@Param("id") Long id);
 
     Optional<Usuario> findByCupoIdAndDadoDeBajaEnIsNullAndSimuladoFalse(Long cupoId);
 

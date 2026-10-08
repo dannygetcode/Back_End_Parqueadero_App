@@ -208,6 +208,8 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional(noRollbackFor = NegocioException.class)
     public void cambiarPin(Long id, CambioPinDTO dto) {
+        // FOR UPDATE antes de comprobar el PIN: el contador de fallos no pierde incrementos con peticiones paralelas.
+        usuarioRepo.bloquearPorId(id);
         Usuario u = exigirOperable(id, true);
         if (ReglasPin.esTrivial(dto.pinNuevo())) {
             throw NegocioException.invalido("El PIN es demasiado fácil de adivinar");

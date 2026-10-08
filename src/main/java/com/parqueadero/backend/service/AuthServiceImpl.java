@@ -24,6 +24,8 @@ import java.util.Locale;
 /**
  * Los métodos de login no hacen rollback al lanzar NegocioException: el contador de intentos fallidos y el bloqueo
  * deben quedar guardados aunque la respuesta sea 401/423.
+ * La cuenta se lee con SELECT ... FOR UPDATE: los intentos simultáneos sobre la misma cuenta se serializan y ninguno
+ * pierde el incremento del contador (sin el bloqueo, N peticiones paralelas leían el mismo valor y escribían +1).
  */
 @Service
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(noRollbackFor = NegocioException.class)
     public TokenDTO loginAdmin(AdminLoginRequest request) {
-        Administrador admin = administradorRepo.findByUsuario(request.username()).orElse(null);
+        Administrador admin = administradorRepo.bloquearPorUsuario(request.username()).orElse(null);
         if (admin == null) {
             encoder.matches(request.password(), hashRelleno());
             throw NegocioException.noAutenticado(MSG_ADMIN);
@@ -64,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(noRollbackFor = NegocioException.class)
     public TokenDTO loginUsuario(LoginUsuarioDTO request) {
-        Usuario u = usuarioRepo.findByTelefonoAndDadoDeBajaEnIsNullAndSimuladoFalse(request.telefono()).orElse(null);
+        Usuario u = usuarioRepo.bloquearPorTelefono(request.telefono()).orElse(null);
         if (u == null || !u.isValidado() || u.getPinHash() == null) {
             encoder.matches(request.pin(), hashRelleno());
             throw NegocioException.noAutenticado(MSG_LOGIN);
@@ -85,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
         if (ReglasPin.esTrivial(request.pin())) {
             throw NegocioException.invalido("El PIN es demasiado fácil de adivinar");
         }
-        Usuario u = usuarioRepo.findByTelefonoAndDadoDeBajaEnIsNullAndSimuladoFalse(request.telefono()).orElse(null);
+        Usuario u = usuarioRepo.bloquearPorTelefono(request.telefono()).orElse(null);
         if (u == null) {
             encoder.matches(request.codigo(), hashRelleno());
             throw NegocioException.noAutenticado(MSG_ACTIVAR);
