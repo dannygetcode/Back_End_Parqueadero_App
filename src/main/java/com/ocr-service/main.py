@@ -9,6 +9,10 @@ from dateutil import parser as date_parser
 # Ruta configurable; en Windows definir TESSERACT_CMD con la ruta a tesseract.exe
 pytesseract.pytesseract.tesseract_cmd = os.getenv("TESSERACT_CMD", "tesseract")
 
+# Limite de pixeles: evita decodificar imagenes enormes (bomba de descompresion).
+MAX_PIXELES = 25_000_000
+Image.MAX_IMAGE_PIXELS = MAX_PIXELES
+
 app = Flask(__name__)
 
 def extraer_valor(linea: str) -> int | None:
@@ -79,9 +83,17 @@ def ocr():
         return jsonify({"error": "No image uploaded"}), 400
 
     # Carga la imagen y obtiene texto crudo
-    img = Image.open(request.files['image'].stream)
+    try:
+        img = Image.open(request.files['image'].stream)
+        if img.width * img.height > MAX_PIXELES:
+            return jsonify({"error": "Image too large"}), 413
+        img.load()
+    except (Image.DecompressionBombError, Image.DecompressionBombWarning):
+        return jsonify({"error": "Image too large"}), 413
+    except (Image.UnidentifiedImageError, OSError):
+        return jsonify({"error": "Invalid image"}), 400
     texto = pytesseract.image_to_string(img)
-    print("=== TEXTO OCR ===\n", texto)  # Debug en consola
+    # No se registra el texto extraído: es un comprobante con datos personales y financieros.
 
     # Procesa solo fecha y valor
     datos = procesar_lineas(texto)

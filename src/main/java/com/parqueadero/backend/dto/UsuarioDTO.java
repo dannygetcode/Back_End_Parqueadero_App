@@ -1,20 +1,23 @@
 package com.parqueadero.backend.dto;
 
-import lombok.*;
+import com.parqueadero.backend.entity.EstadoUsuario;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class UsuarioDTO {
-    private Long id;
-    private String telefono;
-    private Boolean verificado;
-    private Boolean activo;
-    private String nombre;
-    private String apellido;
-    private String placa;
-    private String codigoValidacion;
-    private String pin;
-    private String estado;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+
+/** Usuario hacia fuera. Nunca lleva PIN, hashes ni código de validación. */
+public record UsuarioDTO(
+        Long id,
+        String telefono,
+        String nombre,
+        String apellido,
+        EstadoUsuario estado,
+        String suspendidoMotivo,
+        boolean validado,
+        OffsetDateTime bloqueadoHasta,
+        CupoResumenDTO cupo,
+        VehiculoDTO vehiculo,
+        LocalDate vigenteHasta,
+        OffsetDateTime creadoEn,
+        OffsetDateTime dadoDeBajaEn) {
 }

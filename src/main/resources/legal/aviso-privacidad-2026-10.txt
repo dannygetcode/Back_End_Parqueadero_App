@@ -1,0 +1,24 @@
+AVISO DE PRIVACIDAD Y AUTORIZACIÓN DE TRATAMIENTO DE DATOS PERSONALES
+Versión 2026-10 — Ley 1581 de 2012 y Decreto 1377 de 2013 (Colombia)
+
+1. Responsable del tratamiento
+[Nombre o razón social del responsable], [identificación], con domicilio en [dirección] y contacto en [correo o teléfono de atención]. (Estos datos los completa el responsable antes de publicar el servicio.)
+
+2. Datos que se tratan
+Teléfono celular, nombre y apellido; placa, tipo, carrocería, color y marca del vehículo; cupo asignado; comprobantes de pago que usted sube; registros de entrada y salida del parqueadero (placa leída, fecha y hora). No se recogen documento de identidad, correo electrónico ni imágenes de las cámaras.
+
+3. Finalidades
+a) Gestionar su mensualidad y el acceso al parqueadero (identificar su vehículo por la placa y abrir la puerta).
+b) Verificar y registrar sus pagos, incluida la lectura automática (OCR) del comprobante.
+c) Estadísticas internas de ocupación e ingresos, sin publicar datos personales.
+
+4. Derechos del titular
+Usted puede conocer, actualizar, rectificar y suprimir sus datos; solicitar prueba de esta autorización; ser informado del uso dado a sus datos; revocar la autorización cuando no exista un deber legal o contractual de conservarlos; y presentar quejas ante la Superintendencia de Industria y Comercio. Las solicitudes se atienden en el canal de contacto indicado en el punto 1.
+
+5. Conservación
+Los datos de su cuenta se conservan mientras tenga la mensualidad activa. Los comprobantes y el historial de pagos y accesos se conservan como soporte contable mientras exista ese historial, aunque se dé de baja la cuenta.
+
+6. Seguridad
+El PIN y el código de activación se guardan protegidos con hash irreversible; los comprobantes solo los ven usted y el administrador.
+
+Al activar su cuenta y marcar la casilla de aceptación, usted autoriza de forma previa, expresa e informada el tratamiento de sus datos para las finalidades descritas. Se registra la fecha, la hora y la versión de este aviso.

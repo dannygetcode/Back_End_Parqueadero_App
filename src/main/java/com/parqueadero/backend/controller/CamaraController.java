@@ -1,53 +1,39 @@
 package com.parqueadero.backend.controller;
 
+import com.parqueadero.backend.config.UsuarioAutenticado;
 import com.parqueadero.backend.dto.CamaraDTO;
+import com.parqueadero.backend.dto.CamaraEstadoDTO;
 import com.parqueadero.backend.service.CamaraService;
-
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
-@CrossOrigin(
-  origins = "*",
-  methods = {
-    RequestMethod.GET,
-    RequestMethod.POST,    
-    RequestMethod.PUT,
-    RequestMethod.DELETE,  
-    RequestMethod.OPTIONS
-  }
-)
-
+/** Lectura: ADMIN y USUARIO. Escritura: solo ADMIN. CORS solo en SecurityConfig (sin @CrossOrigin). */
 @RestController
 @RequestMapping("/api/camaras")
+@RequiredArgsConstructor
 public class CamaraController {
 
     private final CamaraService servicio;
 
-    public CamaraController(CamaraService servicio) {
-        this.servicio = servicio;
-    }
-
+    /** ADMIN: {@code List<CamaraDTO>} (con url). USUARIO: {@code List<CamaraUsuarioDTO>} (sin url). */
     @GetMapping
-    public List<CamaraDTO> listar() {
-        return servicio.listarCamaras();
+    public List<?> listar(@AuthenticationPrincipal UsuarioAutenticado quien) {
+        return quien != null && quien.esAdmin() ? servicio.listarCamaras() : servicio.listarCamarasParaUsuario();
     }
 
     @PostMapping
-    public ResponseEntity<CamaraDTO> crearCamara(@RequestBody CamaraDTO dto) {
-        CamaraDTO creada = servicio.crearCamara(dto);
-        return ResponseEntity.ok(creada);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CamaraDTO crearCamara(@Valid @RequestBody CamaraDTO dto) {
+        return servicio.crearCamara(dto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CamaraDTO> actualizarEstado(
-            @PathVariable Long id,
-            @RequestBody Map<String, Boolean> payload) {
-        Boolean activa = payload.get("activa");
-        CamaraDTO updated = servicio.actualizarEstado(id, activa);
-        return ResponseEntity.ok(updated);
+    public CamaraDTO actualizarEstado(@PathVariable Long id, @Valid @RequestBody CamaraEstadoDTO dto) {
+        return servicio.actualizarEstado(id, dto.activa());
     }
-
 }
