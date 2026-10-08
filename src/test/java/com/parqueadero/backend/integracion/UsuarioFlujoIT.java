@@ -192,6 +192,16 @@ class UsuarioFlujoIT extends PruebaIntegracion {
         mvc.perform(get("/api/usuarios/yo").header("Authorization", nuevo)).andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void activarConVersionDeAvisoDistintaDa400() throws Exception {
+        UsuarioPrueba u = crearUsuario(TipoVehiculo.MOTO);
+        mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
+                        .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", u.codigo(), "pin", PIN,
+                                "aceptaTratamientoDatos", true, "versionConsentimiento", "1999-01"))))
+                .andExpect(status().isBadRequest());
+        activar(u);
+    }
+
     private MvcResult login(String telefono, String pin, int esperado) throws Exception {
         return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", telefono, "pin", pin))))

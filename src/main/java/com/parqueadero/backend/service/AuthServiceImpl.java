@@ -42,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final PoliticaIntentos intentos;
     private final IntentosCuentasInexistentes inexistentes;
     private final JwtService jwtService;
+    private final LegalService legalService;
     private final Clock clock;
 
     @Override
@@ -97,6 +98,10 @@ public class AuthServiceImpl implements AuthService {
     public void activar(ActivacionDTO request) {
         if (ReglasPin.esTrivial(request.pin())) {
             throw NegocioException.invalido("El PIN es demasiado fácil de adivinar");
+        }
+        String versionAviso = legalService.avisoPrivacidad().version();
+        if (!versionAviso.equals(request.versionConsentimiento().trim())) {
+            throw NegocioException.invalido("La versión del aviso de privacidad no es la vigente (" + versionAviso + ")");
         }
         Usuario u = usuarioRepo.bloquearPorTelefono(request.telefono()).orElse(null);
         if (u == null) {
