@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface CamaraService {
     List<CamaraDTO> listarCamaras();
-    CamaraDTO actualizarEstado(Long id, Boolean activa);
-    CamaraDTO crearCamara(CamaraDTO dto);
-    
 
+    CamaraDTO actualizarEstado(Long id, boolean activa);
+
+    CamaraDTO crearCamara(CamaraDTO dto);
 }
