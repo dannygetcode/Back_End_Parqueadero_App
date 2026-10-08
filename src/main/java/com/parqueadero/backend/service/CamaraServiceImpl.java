@@ -1,6 +1,7 @@
 package com.parqueadero.backend.service;
 
 import com.parqueadero.backend.dto.CamaraDTO;
+import com.parqueadero.backend.dto.CamaraUsuarioDTO;
 import com.parqueadero.backend.entity.Camara;
 import com.parqueadero.backend.entity.Parqueadero;
 import com.parqueadero.backend.exception.NegocioException;
@@ -24,6 +25,14 @@ public class CamaraServiceImpl implements CamaraService {
     @Transactional(readOnly = true)
     public List<CamaraDTO> listarCamaras() {
         return repo.findAllByOrderByIdAsc().stream().map(mapeos::camara).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CamaraUsuarioDTO> listarCamarasParaUsuario() {
+        return repo.findAllByOrderByIdAsc().stream()
+                .map(c -> new CamaraUsuarioDTO(c.getId(), c.getNombre(), c.isActiva()))
+                .toList();
     }
 
     @Override

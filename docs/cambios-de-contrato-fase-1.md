@@ -33,7 +33,7 @@ funcionan contra este backend**. Este documento es la guía para adaptarlos. Ref
 | `subirPago` | multipart `userId, placa, start, end, image` | `POST pagos` multipart con **solo** la parte `comprobante` (JPEG o PNG, máx. 5 MB) → 201 `PagoDTO`. |
 | `obtenerEstadoPuerta` | `GET puerta` → `{abierta}` | Misma ruta; `{abierta, abiertaHasta, ultimoEvento?}` (`ultimoEvento` solo si es del propio usuario). |
 | `actualizarEstadoPuerta` | `PUT puerta {abierta}` | Misma forma `{abierta:true}`; la placa sale del vehículo del usuario. 200 si se abre, **403 con `{..., evento}`** si se deniega (p. ej. `evento.motivo = USUARIO_VENCIDO`). `{abierta:false}` → 403 (solo el admin cierra). |
-| `getCamaras` | `GET camaras` sin token | Con token. `CamaraDTO` añade `simulada`. |
+| `getCamaras` | `GET camaras` sin token | Con token. Para el USUARIO la respuesta es `[{id, nombre, activa}]`: **ya no trae `url`** (el `CamaraDTO.url: String` no nulo de Kotlin debe quitarse o hacerse nullable; `CamaraScreen` no puede abrir el stream con ella). |
 
 Nuevos útiles para la app: `GET pagos/mios`, `GET pagos/proximo-periodo` (`{inicio, fin, montoEsperado}`: cuánto y
 qué periodo va a pagar), `GET pagos/{id}/comprobante` (imagen, con token), `GET accesos/mios` (últimos 30 días),
@@ -91,7 +91,7 @@ Desaparecen `pin`, `codigoValidacion`, `verificado` (→ `validado`), `activo` y
 | `usuarios.js` | Alta: `POST /api/usuarios` `{telefono (3XXXXXXXXX), nombre, apellido, cupoId, vehiculo:{placa, tipoVehiculo, carroceria (solo CARRO), color, marca?}}` → 201 `{usuario, codigoValidacion, codigoExpiraEn}`: **mostrar el código una sola vez** para entregarlo. Se eliminan `/usuarios/registro` y `/usuarios/validar`. Editar: `PUT /api/usuarios/{id}` `{telefono?, nombre?, apellido?, cupoId?}` (ya no PIN ni estado); vehículo: `PUT /api/usuarios/{id}/vehiculo`. Estado: `PUT /api/usuarios/{id}/estado` con cuerpo `{accion: "SUSPENDER"|"REACTIVAR", motivo}` (antes `?estado=`). `DELETE` es baja lógica. Nuevo código: `POST /api/usuarios/{id}/codigo`. Pagos de un usuario: `GET /api/pagos?usuarioId=`. Cupos para el selector: `GET /api/cupos`. |
 | `pagos.js` | `GET /api/pagos` es paginado (`?page=&size=&estado=&usuarioId=&desde=&hasta=` → `{content, page:{size, number, totalElements, totalPages}}`). Se eliminan `PUT /api/pagos/{id}` y `DELETE`: usar `PUT /api/pagos/{id}/aprobar` `{montoConfirmado, observacion?}` y `/rechazar` `{motivo}` (5 a 200 caracteres). La imagen ya no es pública: `fetch(comprobanteUrl, {headers:{Authorization}})` → `Blob` → `URL.createObjectURL` (y quitar `http://localhost:8080` fijo). Cortesía: `POST /api/pagos/manual` multipart `usuarioId, montoConfirmado=0, observacion`. |
 | `puerta.js` | `PUT /api/puerta` al abrir debe enviar `placa` (y opcionalmente `tipo`, `observacion`). Si las reglas lo denegarían, la apertura se registra como forzada y exige `observacion` (si falta, 400). Para simular la cámara desde el panel: `POST /api/accesos/lecturas {placa, camaraId?}`. Nuevos: `GET /api/accesos` (historial paginado) y `GET /api/accesos/ocupacion`. |
-| `camaras.js` | Enviar el token. `PUT /api/camaras/{id}` recibe `{activa}`; `POST` valida `nombre` (1-50) y `url` (http/https, opcional). |
+| `camaras.js` | Enviar el token. `PUT /api/camaras/{id}` recibe `{activa}`; `POST` valida `nombre` (1-50) y `url` (http/https, opcional, sin `usuario:clave@`). El admin sí recibe `url`. |
 
 ## Simulador de cámara
 
