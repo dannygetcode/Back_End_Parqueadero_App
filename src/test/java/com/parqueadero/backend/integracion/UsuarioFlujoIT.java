@@ -202,6 +202,22 @@ class UsuarioFlujoIT extends PruebaIntegracion {
         activar(u);
     }
 
+    @Test
+    void enumInvalidoYJsonIlegibleDan400EnEspanol() throws Exception {
+        long cupoId = crearCupo(TipoVehiculo.CARRO);
+        mvc.perform(post("/api/usuarios").header("Authorization", bearerAdmin())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"telefono\":\"" + telefonoAleatorio() + "\",\"nombre\":\"Ana\",\"apellido\":\"P\","
+                                + "\"cupoId\":" + cupoId + ",\"vehiculo\":{\"placa\":\"ABC123\",\"tipoVehiculo\":\"BICI\"}}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errores[0].campo").value("vehiculo.tipoVehiculo"))
+                .andExpect(jsonPath("$.errores[0].mensaje").value(org.hamcrest.Matchers.containsString("CARRO")));
+        mvc.perform(post("/api/usuarios").header("Authorization", bearerAdmin())
+                        .contentType(MediaType.APPLICATION_JSON).content("{no es json"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("El cuerpo de la petición no es válido"));
+    }
+
     private MvcResult login(String telefono, String pin, int esperado) throws Exception {
         return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", telefono, "pin", pin))))
