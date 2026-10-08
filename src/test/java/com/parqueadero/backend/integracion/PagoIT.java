@@ -4,12 +4,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.parqueadero.backend.entity.TipoVehiculo;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.client.ResourceAccessException;
 
 import java.nio.file.Files;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +55,46 @@ class PagoIT extends PruebaIntegracion {
         mvc.perform(multipart("/api/pagos").file(comprobante(png(2), "otro.png"))
                         .header("Authorization", bearerUsuario(u.id())))
                 .andExpect(status().isConflict());
+    }
+
+    /**
+     * N3: el OCR se llama sin transacción abierta y, si dos subidas simultáneas pasan la comprobación previa, el índice
+     * uq_pago_pendiente_usuario deja entrar solo una: la otra recibe 409 y su archivo no queda en disco.
+     */
+    @Test
+    void subidasSimultaneasUnaGanaYLaOtraRecibe409SinTransaccionDuranteElOcr() throws Exception {
+        UsuarioPrueba u = crearUsuario(TipoVehiculo.CARRO);
+        AtomicBoolean ocrEnTransaccion = new AtomicBoolean(false);
+        CountDownLatch ambasEnOcr = new CountDownLatch(2);
+        when(ocrService.parse(anyString(), any())).thenAnswer(inv -> {
+            if (TransactionSynchronizationManager.isActualTransactionActive()) {
+                ocrEnTransaccion.set(true);
+            }
+            ambasEnOcr.countDown();
+            ambasEnOcr.await(10, TimeUnit.SECONDS);
+            return Map.of("valor", 80000);
+        });
+        long antes = archivosSubidos();
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            List<Future<Integer>> fs = new ArrayList<>();
+            for (int i = 0; i < 2; i++) {
+                byte[] png = png(100 + i);
+                fs.add(pool.submit(() -> mvc.perform(multipart("/api/pagos").file(comprobante(png, "p.png"))
+                        .header("Authorization", bearerUsuario(u.id()))).andReturn().getResponse().getStatus()));
+            }
+            List<Integer> estados = new ArrayList<>();
+            for (Future<Integer> f : fs) {
+                estados.add(f.get(60, TimeUnit.SECONDS));
+            }
+            assertThat(estados).containsExactlyInAnyOrder(201, 409);
+        } finally {
+            pool.shutdownNow();
+        }
+        assertThat(ocrEnTransaccion).isFalse();
+        assertThat(archivosSubidos()).isEqualTo(antes + 1);
+        mvc.perform(get("/api/pagos/mios").header("Authorization", bearerUsuario(u.id())))
+                .andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test

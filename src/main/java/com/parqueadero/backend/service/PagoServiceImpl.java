@@ -13,13 +13,16 @@ import jakarta.persistence.criteria.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,10 +52,11 @@ public class PagoServiceImpl implements PagoService {
     private final Clock clock;
     private final int diasGracia;
     private final long maxBytes;
+    private final TransactionTemplate transaccion;
 
     public PagoServiceImpl(PagoRepository pagoRepo, UsuarioRepository usuarioRepo, UsuarioService usuarioService,
                            TarifaService tarifaService, OcrService ocrService, AlmacenComprobantes almacen,
-                           Mapeos mapeos, Clock clock,
+                           Mapeos mapeos, Clock clock, PlatformTransactionManager transacciones,
                            @Value("${usuarios.vencimiento.dias-gracia:5}") int diasGracia,
                            @Value("${spring.servlet.multipart.max-file-size:5MB}") DataSize maxTamano) {
         this.pagoRepo = pagoRepo;
@@ -65,6 +69,7 @@ public class PagoServiceImpl implements PagoService {
         this.clock = clock;
         this.diasGracia = diasGracia;
         this.maxBytes = maxTamano.toBytes();
+        this.transaccion = new TransactionTemplate(transacciones);
     }
 
     @Override
@@ -75,19 +80,17 @@ public class PagoServiceImpl implements PagoService {
         return new PeriodoDTO(c.periodo().inicio(), c.periodo().fin(), c.tarifa().getValorMensual());
     }
 
+    /**
+     * Sin transacción a propósito (N3): la validación del archivo y la llamada al OCR (hasta 10 s) se hacen sin tener
+     * abierta una transacción ni una conexión de BD. La transacción solo envuelve el cálculo del periodo y el INSERT;
+     * si dos subidas simultáneas pasan la comprobación previa, el índice único parcial {@code uq_pago_pendiente_usuario}
+     * rechaza la segunda y se responde 409 (el archivo de la que pierde se borra).
+     */
     @Override
-    @Transactional
     public PagoDTO crear(Long usuarioId, MultipartFile comprobante) {
-        Usuario u = usuarioService.exigirOperable(usuarioId, true);
+        usuarioService.exigirOperable(usuarioId, true);
         Archivo archivo = validarArchivo(comprobante, true);
-        if (pagoRepo.existsByUsuarioIdAndEstadoAndSimuladoFalse(usuarioId, EstadoPago.PENDIENTE)) {
-            throw NegocioException.conflicto("Ya tiene un pago pendiente de revisión");
-        }
-        if (pagoRepo.existsByUsuarioIdAndComprobanteSha256AndEstadoNot(usuarioId, archivo.sha256(), EstadoPago.RECHAZADO)) {
-            throw NegocioException.conflicto("Este comprobante ya fue enviado");
-        }
-        LocalDate hoy = LocalDate.now(clock);
-        Calculo calculo = calcular(u, hoy);
+        exigirSinPendienteNiDuplicado(usuarioId, archivo);
 
         InterpreteOcr.Resultado ocr;
         try {
@@ -96,6 +99,24 @@ public class PagoServiceImpl implements PagoService {
             log.warn("OCR no disponible o con error ({}); el pago se crea con OCR FALLIDO", e.getClass().getSimpleName());
             ocr = InterpreteOcr.fallido();
         }
+
+        InterpreteOcr.Resultado resultadoOcr = ocr;
+        try {
+            return transaccion.execute(estado -> insertarPagoDeUsuario(usuarioId, archivo, resultadoOcr));
+        } catch (DataIntegrityViolationException e) {
+            if (violaRestriccion(e, "uq_pago_pendiente_usuario")) {
+                throw NegocioException.conflicto("Ya tiene un pago pendiente de revisión");
+            }
+            throw e;
+        }
+    }
+
+    private PagoDTO insertarPagoDeUsuario(Long usuarioId, Archivo archivo, InterpreteOcr.Resultado ocr) {
+        // Se vuelve a comprobar dentro de la transacción: el estado pudo cambiar mientras respondía el OCR.
+        Usuario u = usuarioService.exigirOperable(usuarioId, true);
+        exigirSinPendienteNiDuplicado(usuarioId, archivo);
+        LocalDate hoy = LocalDate.now(clock);
+        Calculo calculo = calcular(u, hoy);
 
         Pago p = new Pago();
         p.setUsuario(u);
@@ -114,6 +135,31 @@ public class PagoServiceImpl implements PagoService {
         p.setPosibleDuplicado(pagoRepo.existsByComprobanteSha256AndUsuarioIdNotAndEstadoNot(
                 archivo.sha256(), usuarioId, EstadoPago.RECHAZADO));
         return guardarConArchivo(p, archivo, hoy);
+    }
+
+    private void exigirSinPendienteNiDuplicado(Long usuarioId, Archivo archivo) {
+        if (pagoRepo.existsByUsuarioIdAndEstadoAndSimuladoFalse(usuarioId, EstadoPago.PENDIENTE)) {
+            throw NegocioException.conflicto("Ya tiene un pago pendiente de revisión");
+        }
+        if (pagoRepo.existsByUsuarioIdAndComprobanteSha256AndEstadoNot(usuarioId, archivo.sha256(), EstadoPago.RECHAZADO)) {
+            throw NegocioException.conflicto("Este comprobante ya fue enviado");
+        }
+    }
+
+    private static boolean violaRestriccion(DataIntegrityViolationException e, String restriccion) {
+        for (Throwable t = e; t != null; t = t.getCause()) {
+            if (t instanceof org.hibernate.exception.ConstraintViolationException cve
+                    && restriccion.equalsIgnoreCase(cve.getConstraintName())) {
+                return true;
+            }
+            if (t.getMessage() != null && t.getMessage().contains(restriccion)) {
+                return true;
+            }
+            if (t.getCause() == t) {
+                break;
+            }
+        }
+        return false;
     }
 
     @Override
