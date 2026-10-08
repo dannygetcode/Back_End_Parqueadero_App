@@ -10,7 +10,7 @@ API REST de un sistema de parqueadero: usuarios con placa, pagos con comprobante
 ## Comandos
 - Base de datos: `docker compose up -d db`
 - Correr: `./mvnw spring-boot:run` (puerto 8080)
-- Tests: `./mvnw test` (hoy solo existe `contextLoads`)
+- Tests: `./mvnw verify` (unitarios + integración con Testcontainers; necesita Docker)
 - OCR: `pip install -r src/main/java/com/ocr-service/requirements.txt` y `python main.py` desde esa carpeta (necesita Tesseract instalado)
 
 ## Arquitectura
