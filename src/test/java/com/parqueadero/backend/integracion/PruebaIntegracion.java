@@ -65,6 +65,8 @@ public abstract class PruebaIntegracion {
 
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:15");
     static final Path UPLOADS;
+    /** Servidor simulado del servicio de pronóstico (ver PronosticoIT). */
+    static final PronosticoSimulado PRONOSTICO = new PronosticoSimulado();
 
     static {
         POSTGRES.start();
@@ -81,6 +83,7 @@ public abstract class PruebaIntegracion {
         r.add("spring.datasource.username", POSTGRES::getUsername);
         r.add("spring.datasource.password", POSTGRES::getPassword);
         r.add("app.upload.dir", UPLOADS::toString);
+        r.add("pronostico.service.url", PRONOSTICO::url);
     }
 
     @TestConfiguration(proxyBeanMethods = false)

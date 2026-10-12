@@ -1,0 +1,31 @@
+{
+  "generadoEn": "2026-10-08T17:26:14-05:00",
+  "versionModelo": "pronostico-1.0.0",
+  "origenDatos": "simulado",
+  "ocupacion": {
+    "n_origenes": 43,
+    "n_horas": 7224,
+    "mae_modelo": 0.4801,
+    "mae_media": 0.5219,
+    "mae_baseline_semana_pasada": 0.5065,
+    "mejora_relativa_vs_baseline": 0.0521,
+    "cobertura_p10_p90": 0.8804,
+    "cobertura_nominal": 0.8,
+    "brier_lleno_modelo": 0.0016,
+    "brier_lleno_baseline": 0.0,
+    "frecuencia_lleno_observada": 0.0
+  },
+  "vacancia": {
+    "n": 66,
+    "tasa_renovacion_observada": 0.9242,
+    "brier_modelo": 0.0692,
+    "brier_baseline_tasa_constante": 0.0705,
+    "logloss_modelo": 0.2641,
+    "logloss_baseline_tasa_constante": 0.2714,
+    "horizonte_dias": 30
+  },
+  "llegadas": {
+    "validado": false,
+    "nota": "sin backtest: se reporta la variabilidad (p25-p75) y la probabilidad de venir por usuario"
+  }
+}

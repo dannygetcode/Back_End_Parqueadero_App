@@ -81,6 +81,8 @@ public class SecurityConfig {
                         // Usuarios
                         .requestMatchers("/api/usuarios/yo", "/api/usuarios/yo/**").hasRole(USUARIO)
                         .requestMatchers("/api/usuarios", "/api/usuarios/**").hasRole(ADMIN)
+                        // Analítica (solo lectura; /api/usuarios/yo/resumen ya cae en /yo/**)
+                        .requestMatchers("/api/analitica", "/api/analitica/**").hasRole(ADMIN)
                         // Cupos y tarifas
                         .requestMatchers("/api/cupos", "/api/cupos/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.GET, "/api/tarifas").hasAnyRole(ADMIN, USUARIO)
