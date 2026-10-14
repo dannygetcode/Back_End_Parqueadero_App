@@ -617,7 +617,7 @@ V4 (`evento_acceso(ocurrido_en)`). Contrato completo en `docs/contrato-analitica
 | `codigo-validacion.horas` | — | `72` | |
 | `usuarios.vencimiento.dias-gracia` / `.cron` | — | `5` / `0 5 0 * * *` | Zona `America/Bogota` |
 | `accesos.antirrebote-segundos` / `.apertura-segundos` / `.desfase-maximo-minutos` | — | `60` / `10` / `5` | |
-| `legal.aviso-privacidad.version` | — | `2026-10` | Versión del aviso servido en `/api/legal/aviso-privacidad` |
+| `legal.aviso-privacidad.version` | — | `2026-10-14` | Versión del aviso servido en `/api/legal/aviso-privacidad` |
 | `spring.servlet.multipart.max-file-size` | — | `5MB` | |
 | `spring.jpa.hibernate.ddl-auto` | — | `validate` | ADR 0001 |
 | `spring.flyway.enabled` | — | `true` | |
