@@ -185,7 +185,7 @@ public abstract class PruebaIntegracion {
     protected void activar(UsuarioPrueba u) throws Exception {
         mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", u.codigo(), "pin", PIN,
-                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))))
+                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))))
                 .andExpect(status().isNoContent());
     }
 

@@ -73,7 +73,7 @@ class CoberturaIT extends PruebaIntegracion {
         reloj.adelantar(Duration.ofHours(72).plusMinutes(1));
         mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", u.codigo(), "pin", PIN,
-                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))))
+                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))))
                 .andExpect(status().isUnauthorized());
     }
 
