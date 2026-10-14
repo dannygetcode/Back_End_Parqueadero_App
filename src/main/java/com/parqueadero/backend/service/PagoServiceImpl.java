@@ -230,7 +230,7 @@ public class PagoServiceImpl implements PagoService {
     @Override
     @Transactional(readOnly = true)
     public List<PagoDTO> mios(Long usuarioId) {
-        return pagoRepo.findByUsuarioIdAndSimuladoFalseOrderByCreadoEnDesc(usuarioId).stream().map(mapeos::pago).toList();
+        return pagoRepo.findByUsuarioIdOrderByCreadoEnDesc(usuarioId).stream().map(mapeos::pago).toList();
     }
 
     @Override

@@ -22,7 +22,8 @@ public interface EventoAccesoRepository extends JpaRepository<EventoAcceso, Long
 
     Optional<EventoAcceso> findFirstByParqueaderoIdAndSimuladoFalseOrderByOcurridoEnDescIdDesc(Long parqueaderoId);
 
-    List<EventoAcceso> findByUsuarioIdAndSimuladoFalseAndOcurridoEnGreaterThanEqualOrderByOcurridoEnDescIdDesc(
+    /** Incluye simulados a propósito: es el historial propio del usuario (endpoint mios), no la operación. */
+    List<EventoAcceso> findByUsuarioIdAndOcurridoEnGreaterThanEqualOrderByOcurridoEnDescIdDesc(
             Long usuarioId, Instant desde);
 
     /** Vehículos cuyo último evento PERMITIDO es ENTRADA: [vehiculo_id, ocurrido_en]. */

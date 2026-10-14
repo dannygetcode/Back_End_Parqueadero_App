@@ -24,7 +24,8 @@ public interface PagoRepository extends JpaRepository<Pago, Long>, JpaSpecificat
 
     boolean existsByComprobanteSha256AndUsuarioIdNotAndEstadoNot(String sha256, Long usuarioId, EstadoPago estado);
 
-    List<Pago> findByUsuarioIdAndSimuladoFalseOrderByCreadoEnDesc(Long usuarioId);
+    /** Incluye simulados a propósito: es el historial propio del usuario (endpoint mios), no la operación. */
+    List<Pago> findByUsuarioIdOrderByCreadoEnDesc(Long usuarioId);
 
     /** Regla de estado (ADR 0006): ACTIVO si hay un pago aprobado con periodo_fin + gracia >= hoy. */
     @Query("""

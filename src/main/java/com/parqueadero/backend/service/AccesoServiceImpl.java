@@ -165,9 +165,12 @@ public class AccesoServiceImpl implements AccesoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<EventoAccesoDTO> mios(Long usuarioId) {
-        Instant desde = clock.instant().minus(30, ChronoUnit.DAYS);
-        return eventoRepo.findByUsuarioIdAndSimuladoFalseAndOcurridoEnGreaterThanEqualOrderByOcurridoEnDescIdDesc(
+    public List<EventoAccesoDTO> mios(Long usuarioId, int dias) {
+        if (dias < DIAS_MIN || dias > DIAS_MAX) {
+            throw NegocioException.invalido("El parámetro 'dias' debe estar entre " + DIAS_MIN + " y " + DIAS_MAX);
+        }
+        Instant desde = clock.instant().minus(dias, ChronoUnit.DAYS);
+        return eventoRepo.findByUsuarioIdAndOcurridoEnGreaterThanEqualOrderByOcurridoEnDescIdDesc(
                 usuarioId, desde).stream().map(ev -> mapeos.evento(ev, false)).toList();
     }
 
