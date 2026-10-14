@@ -43,7 +43,7 @@ qué periodo va a pagar), `GET pagos/{id}/comprobante` (imagen, con token), `GET
 
 ```json
 { "telefono": "3001234567", "codigo": "K7Q2M9XA", "pin": "482915",
-  "aceptaTratamientoDatos": true, "versionConsentimiento": "2026-10" }
+  "aceptaTratamientoDatos": true, "versionConsentimiento": "2026-10-14" }
 ```
 
 - La app debe mostrar el texto de `GET /api/legal/aviso-privacidad` (`{version, texto}`) y enviar esa `version`.
@@ -99,3 +99,12 @@ Desaparecen `pin`, `codigoValidacion`, `verificado` (→ `validado`), `activo` y
 (`ocurridoEn` opcional, como mucho 5 min en el pasado; `tipo` no se admite con API key). Respuesta `EventoAccesoDTO`:
 200 si se permite (la puerta queda abierta 10 s), 403 con el mismo cuerpo si se deniega. Lecturas repetidas del mismo
 vehículo en menos de 60 s devuelven el evento anterior con `duplicado: true`.
+
+## Historial propio en la app (`mios`) y parámetro `dias`
+
+- `GET pagos/mios` y `GET accesos/mios` ahora incluyen las filas simuladas (`simulado=true`) del propio usuario, para
+  poder demostrar la pestaña Actividad con historial (ver `simulador/README.md`, `--usuario-demo-placa`). El DTO no
+  cambia ni expone la marca. Los listados de admin y la analítica (salvo `incluirSimulados=true`) siguen excluyéndolas.
+- `GET accesos/mios` acepta `?dias=` (opcional; 30 por defecto, de 1 a 365). Fuera de rango o no numérico responde 400
+  (`ProblemDetail`). Compatible hacia atrás. La app puede pedir más historia, por ejemplo `?dias=365`.
+- Pendiente: `docs/contrato-movil.md` vive en la rama `docs-contrato-movil` y no se tocó aquí; debe recibir esta nota.
