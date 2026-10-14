@@ -30,3 +30,19 @@ Credenciales: variables `POSTGRES_DB`, `DB_USER`, `DB_PASSWORD` (y opcional `DB_
 
 `--limpiar` borra **solo** filas `simulado=true` y las regenera en una transaccion; sin el, falla si ya hay
 simulados. No toca filas reales. Tests (sin Docker): `cd simulador && python -m pytest`.
+
+## Historial simulado para un usuario real (demo de la app)
+
+Para que la pestana Actividad de la app muestre pagos y visitas con detalle, se puede dar historial simulado a UN
+usuario real, identificado por su placa (el historial anterior a sus datos reales; todo con `simulado=true`):
+
+```bash
+python simulador/generar.py --limpiar --usuario-demo-placa PLACA   # --meses 12 por defecto
+python simulador/verificar.py                                       # incluye chequeos del usuario demo
+```
+
+Genera pagos mensuales continuos hacia atras que terminan el dia anterior a su primer periodo real (tarifa vigente
+en cada periodo, un rechazo con reenvio, algunos pagos tardios) y visitas de perfil oficina que terminan en una
+SALIDA anterior a su primer evento real. Sin `--limpiar` no duplica (avisa si ya existe). Para revertir, corre
+`python simulador/generar.py --limpiar` **sin** la opcion: borra todo lo simulado, incluido el historial demo.
+Los endpoints `mios` de la app incluyen este historial; los listados de admin y la analitica por defecto no.
