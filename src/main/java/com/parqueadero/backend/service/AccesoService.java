@@ -31,8 +31,11 @@ public interface AccesoService {
     Page<EventoAccesoDTO> listar(LocalDate desde, LocalDate hasta, String placa, ResultadoAcceso resultado,
                                  Pageable pageable);
 
-    /** Eventos del usuario de los últimos 30 días. */
-    List<EventoAccesoDTO> mios(Long usuarioId);
+    int DIAS_MIN = 1;
+    int DIAS_MAX = 365;
+
+    /** Eventos propios (incluye el historial simulado del usuario) de los últimos {@code dias} días, de 1 a 365. */
+    List<EventoAccesoDTO> mios(Long usuarioId, int dias);
 
     OcupacionDTO ocupacion();
 }
