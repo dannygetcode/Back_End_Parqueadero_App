@@ -30,8 +30,7 @@ def verificar_demo(cur, chequeo):
                      EXISTS (SELECT 1 FROM pago p WHERE p.usuario_id = u.id AND p.simulado)
                   OR EXISTS (SELECT 1 FROM evento_acceso e WHERE e.usuario_id = u.id AND e.simulado))""")
     ids = [r[0] for r in cur.fetchall()]
-    print(f"
-== Historial demo en usuarios reales: {len(ids)}")
+    print(f"\n== Historial demo en usuarios reales: {len(ids)}")
     for n, uid in enumerate(ids, 1):
         cur.execute("""SELECT count(*) FILTER (WHERE simulado AND estado='APROBADO'),
                               count(*) FILTER (WHERE simulado AND estado='RECHAZADO'),
