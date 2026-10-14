@@ -1,8 +1,27 @@
 # Backend - Parqueadero
 
 API REST (Spring Boot 3.5, Java 17) + servicio OCR (Flask/Tesseract) + servicio de pronostico (FastAPI) + PostgreSQL 15.
-Diseño de la Fase 1: `docs/arquitectura/fase-1-modelo.md` y ADR en `docs/adr/`. Cambios para la app y el panel:
-`docs/cambios-de-contrato-fase-1.md`.
+Sistema de un parqueadero de 7 cupos (6 carros y 1 moto): usuarios con cupo fijo y placa, pagos con comprobante y revision
+del admin, control de la puerta con registro de entradas y salidas por placa, y analitica con pronostico de vacancia.
+La puerta y las camaras son simuladas (no hay hardware).
+
+## Que incluye
+| Parte | Donde |
+|---|---|
+| API REST con seguridad por rol (ADMIN, USUARIO, SISTEMA), JWT, PIN con hash y bloqueo | `src/main/java`, ADR 0003 |
+| Esquema versionado con Flyway (V1 a V4) | `src/main/resources/db/migration` |
+| Pagos con revision (PENDIENTE, APROBADO, RECHAZADO) y OCR del comprobante | `docs/adr/0005` |
+| Puerta y camara simuladas: entradas y salidas por placa | `docs/adr/0004` |
+| Analitica (KPIs, ocupacion, ingresos, mora, permanencia) y resumen del usuario | `docs/contrato-analitica.md` |
+| Pronostico de vacancia, ocupacion y llegadas (servicio FastAPI) | `pronostico/` |
+| Datos simulados de 12 meses y historial demo para un usuario real | `simulador/` |
+| Aviso de privacidad y condiciones de uso versionado (Ley 1581) | `src/main/resources/legal` |
+
+## Documentacion
+- Contrato de la API para la app movil (resumen compacto): `docs/contrato-movil.md`
+- Contrato de la analitica y el pronostico (panel): `docs/contrato-analitica.md`
+- Diseño de la Fase 1: `docs/arquitectura/fase-1-modelo.md`, ADR en `docs/adr/` y requisitos en `docs/requisitos/`
+- Cambios de contrato para la app y el panel: `docs/cambios-de-contrato-fase-1.md`
 
 ## Configuracion
 Todo se configura por variables de entorno (ver `.env.example`). Los secretos no van en git.
@@ -41,7 +60,8 @@ docker compose up -d --build
 Servicios: `db` (Postgres, healthcheck), `ocr` (solo red interna), `pronostico` (solo red interna, healthcheck en
 `/salud`), `backend` (puerto `SERVER_PORT`, healthcheck en
 `/api/ping`). Al arrancar, Flyway aplica las migraciones de `src/main/resources/db/migration` (V1 esquema, V2 datos
-de referencia: 7 cupos, tarifas, puerta y camara simulada) y se crea el administrador.
+de referencia: 7 cupos, tarifas, puerta y camara simulada; V3 version de credenciales para revocar tokens; V4 indice de
+eventos de acceso) y se crea el administrador.
 La BD no se publica al host; para inspeccionarla anade temporalmente `ports: ["127.0.0.1:5432:5432"]` al servicio `db`.
 
 El backend se publica solo en `127.0.0.1` (variable `BIND_ADDRESS` para cambiarlo). **TLS:** el backend habla HTTP;
@@ -77,7 +97,31 @@ de cero (como en la Fase 1, ADR 0001):
 2. `docker compose stop backend`
 3. `docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"'`
    (o borrar y recrear el volumen: `docker compose down`, `docker volume rm backend_pgdata`, `docker volume create backend_pgdata`)
-4. `docker compose up -d`: Flyway vuelve a aplicar V1 y V2.
+4. `docker compose up -d`: Flyway vuelve a aplicar todas las migraciones (V1 a V4).
+
+## Datos simulados
+`simulador/` (Python, ver `simulador/README.md`) genera 12 meses de usuarios, vehiculos, pagos y entradas y salidas con
+`simulado=true`. Los listados de administracion y la analitica los excluyen salvo `incluirSimulados=true`; el simulador
+solo borra y regenera lo simulado, nunca datos reales. La BD no esta publicada: el simulador trae un override de compose
+para publicarla en `127.0.0.1` solo mientras se ejecuta.
+```
+docker compose -f docker-compose.yml -f simulador/compose.publicar-bd.yml up -d db
+pip install -r simulador/requirements.txt
+python simulador/generar.py --limpiar
+python simulador/verificar.py
+docker compose up -d db      # vuelve a cerrar el puerto 5432
+```
+**Historial demo para un usuario real:** `python simulador/generar.py --limpiar --usuario-demo-placa PLACA` agrega al usuario
+real de esa placa 12 meses de pagos y visitas simulados, justo antes de su primer periodo real, para ver la actividad
+en la app. Esos registros tambien son simulados: `/api/pagos/mios` y `/api/accesos/mios` los muestran al dueño, pero no
+cuentan como reales en la analitica ni afectan la puerta. Para quitarlos, ejecutar `generar.py --limpiar` sin la opcion.
+`GET /api/accesos/mios?dias=90` (1 a 365, por defecto 30) permite pedir mas historia de visitas.
+
+## Aviso de privacidad
+El texto vigente esta en `src/main/resources/legal/aviso-privacidad-{version}.txt` y la version en
+`legal.aviso-privacidad.version` (hoy `2026-10-14`). Para cambiarlo: crear el archivo de la version nueva (el anterior se
+conserva, porque las aceptaciones guardan su version) y subir la propiedad. **Antes de publicar el servicio hay que
+completar en el texto los datos del responsable del tratamiento** (nombre, identificacion, direccion y contacto).
 
 ## Revertir
 `docker compose down` (conserva BD y comprobantes). `docker compose down -v` borra el volumen `uploads` (comprobantes)
@@ -92,7 +136,9 @@ pero no la BD (volumen externo).
 - `./mvnw verify`: ademas los de integracion (`*IT`) con MockMvc contra PostgreSQL 15 real levantado por
   **Testcontainers** (necesita Docker en marcha). Cubren migraciones + `validate`, matriz de autorizacion por rol,
   IDOR, PIN y bloqueo, alta -> activacion -> login, pagos (subida, tipo invalido, OCR caido, aprobacion), accesos
-  (inferencia, anti-rebote, entrada repetida, salida siempre permitida) y vencimiento.
+  (inferencia, anti-rebote, entrada repetida, salida siempre permitida), vencimiento, analitica y proxy del pronostico,
+  limite de intentos por IP e historial propio (`/mios`).
+- `pytest` en `pronostico/` y en `simulador/`: no necesitan Docker ni base de datos.
 - Los tests usan sus propios valores de prueba; no leen `.env`.
 
 ## CI
