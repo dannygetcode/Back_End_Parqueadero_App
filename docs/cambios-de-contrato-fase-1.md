@@ -43,7 +43,7 @@ qué periodo va a pagar), `GET pagos/{id}/comprobante` (imagen, con token), `GET
 
 ```json
 { "telefono": "3001234567", "codigo": "K7Q2M9XA", "pin": "482915",
-  "aceptaTratamientoDatos": true, "versionConsentimiento": "2026-10" }
+  "aceptaTratamientoDatos": true, "versionConsentimiento": "2026-10-14" }
 ```
 
 - La app debe mostrar el texto de `GET /api/legal/aviso-privacidad` (`{version, texto}`) y enviar esa `version`.

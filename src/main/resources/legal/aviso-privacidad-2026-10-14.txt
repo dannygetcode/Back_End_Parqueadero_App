@@ -1,0 +1,30 @@
+AVISO DE PRIVACIDAD Y CONDICIONES DE USO
+Versión 2026-10-14 — Ley 1581 de 2012 y Decreto 1377 de 2013 (Colombia)
+
+1. Quién es el responsable
+[Nombre o razón social del responsable], [identificación], domicilio en [dirección], contacto en [correo o teléfono de atención]. (Estos datos los completa el responsable antes de publicar el servicio.)
+
+2. Qué datos usamos
+Su teléfono, nombre y apellido; la placa, el tipo, el color y la marca de su vehículo; el cupo que se le asigna; los comprobantes de pago que usted sube; y la placa, la fecha y la hora de cada entrada y salida. No pedimos documento de identidad ni correo electrónico, y no guardamos imágenes de las cámaras.
+
+3. Para qué los usamos
+a) Gestionar su mensualidad y permitirle el acceso: identificar su vehículo por la placa y abrir la puerta.
+b) Revisar y registrar sus pagos, incluida la lectura automática del comprobante.
+c) Estadísticas internas de ocupación e ingresos, sin publicar datos personales.
+No vendemos ni cedemos sus datos a terceros, salvo que la ley lo exija.
+
+4. Su responsabilidad al usar el parqueadero
+Cada vez que usted entra o sale con su vehículo es responsable del uso que se hace del parqueadero en ese momento. Esto incluye:
+a) Ingresar únicamente el vehículo registrado en su cuenta. No ingrese ni deje ingresar vehículos que no le corresponden.
+b) No permitir el ingreso de personas no autorizadas al abrir o cruzar la puerta, y velar por la seguridad de los demás usuarios.
+c) Respetar el cupo asignado y las normas de convivencia del parqueadero.
+d) Mantener en reserva su PIN y su código de activación. Lo que se haga con su cuenta se entiende hecho por usted.
+Incumplir estas condiciones puede llevar a la suspensión de su acceso.
+
+5. Sus derechos
+Usted puede conocer, actualizar, rectificar y pedir la supresión de sus datos; pedir prueba de esta autorización; saber cómo se usan sus datos; revocar la autorización cuando no exista un deber legal o contractual de conservarlos; y presentar quejas ante la Superintendencia de Industria y Comercio. Escriba al contacto del punto 1.
+
+6. Cuánto tiempo guardamos los datos y cómo los protegemos
+Sus datos de cuenta se conservan mientras tenga la mensualidad activa. Los pagos y el historial de accesos se conservan como soporte contable mientras exista ese historial, aunque su cuenta se dé de baja. El PIN y el código de activación se guardan protegidos con hash irreversible, y los comprobantes solo los ven usted y el administrador.
+
+Al activar su cuenta y marcar la casilla, usted acepta este aviso y estas condiciones de uso, y autoriza de forma previa, expresa e informada el tratamiento de sus datos para las finalidades descritas. Se registran la fecha, la hora y la versión de este aviso.
