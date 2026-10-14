@@ -24,6 +24,46 @@ def pct(vals, q):
     return s[lo] + (s[hi] - s[lo]) * (i - lo)
 
 
+def verificar_demo(cur, chequeo):
+    """Usuarios REALES con historial simulado (--usuario-demo-placa). Solo conteos y fechas, sin datos personales."""
+    cur.execute("""SELECT DISTINCT u.id FROM usuario u WHERE NOT u.simulado AND (
+                     EXISTS (SELECT 1 FROM pago p WHERE p.usuario_id = u.id AND p.simulado)
+                  OR EXISTS (SELECT 1 FROM evento_acceso e WHERE e.usuario_id = u.id AND e.simulado))""")
+    ids = [r[0] for r in cur.fetchall()]
+    print(f"\n== Historial demo en usuarios reales: {len(ids)}")
+    for n, uid in enumerate(ids, 1):
+        cur.execute("""SELECT count(*) FILTER (WHERE simulado AND estado='APROBADO'),
+                              count(*) FILTER (WHERE simulado AND estado='RECHAZADO'),
+                              count(*) FILTER (WHERE NOT simulado), min(periodo_inicio) FILTER (WHERE simulado),
+                              max(periodo_fin) FILTER (WHERE simulado)
+                       FROM pago WHERE usuario_id = %s""", (uid,))
+        ap, rj, reales, d0, d1 = cur.fetchone()
+        cur.execute("""SELECT tipo, ocurrido_en, simulado FROM evento_acceso
+                       WHERE usuario_id = %s AND resultado='PERMITIDO' ORDER BY ocurrido_en, id""", (uid,))
+        evs = [(t, o.astimezone(nucleo.TZ), s) for t, o, s in cur.fetchall()]
+        sim = [e for e in evs if e[2]]
+        print(f"  usuario demo #{n}: pagos simulados aprobados={ap} rechazados={rj}, pagos reales={reales}, "
+              f"periodos {d0} a {d1}; eventos simulados={len(sim)} (reales={len(evs) - len(sim)}), "
+              f"{sim[0][1].date() if sim else None} a {sim[-1][1].date() if sim else None}")
+        cur.execute("""SELECT periodo_inicio, periodo_fin FROM pago
+                       WHERE usuario_id = %s AND estado='APROBADO' ORDER BY periodo_inicio""", (uid,))
+        per = cur.fetchall()
+        solapes = sum(1 for a, b in zip(per, per[1:]) if b[0] <= a[1])
+        huecos = sum(1 for a, b in zip(per, per[1:]) if b[0] != a[1] + timedelta(days=1))
+        chequeo(f"demo #{n}: periodos (simulados + reales) sin solapes", solapes == 0)
+        chequeo(f"demo #{n}: periodos (simulados + reales) sin huecos, incluido el limite con el primer pago real",
+                huecos == 0)
+        chequeo(f"demo #{n}: eventos simulados + reales alternan ENTRADA/SALIDA",
+                nucleo.alternancia_valida([(t, o) for t, o, _ in evs]))
+        chequeo(f"demo #{n}: el historial simulado termina en SALIDA", bool(sim) and sim[-1][0] == "SALIDA")
+        cur.execute("""SELECT (SELECT count(*) FROM pago WHERE usuario_id = %s AND simulado AND (creado_en > now()
+                                                   OR revisado_en > now())),
+                              (SELECT count(*) FROM evento_acceso WHERE usuario_id = %s AND simulado AND ocurrido_en > now())""",
+                    (uid, uid))
+        fut = cur.fetchone()
+        chequeo(f"demo #{n}: nada simulado en el futuro", sum(fut) == 0)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--hasta", type=date.fromisoformat, default=date.today())
@@ -164,9 +204,11 @@ def main():
                        CASE WHEN EXISTS (SELECT 1 FROM pago p WHERE p.usuario_id=u.id AND p.estado='APROBADO'
                             AND %s BETWEEN p.periodo_inicio AND p.periodo_fin) THEN 'ACTIVO' ELSE 'VENCIDO' END""", (hasta,))
         chequeo(f"estado del usuario coherente con la cobertura al {hasta}", cur.fetchone()[0] == 0)
-        cur.execute("""SELECT count(*) FROM evento_acceso e LEFT JOIN usuario u ON u.id = e.usuario_id
-                       WHERE e.simulado AND u.id IS NOT NULL AND NOT u.simulado""")
-        chequeo("eventos simulados no apuntan a usuarios reales", cur.fetchone()[0] == 0)
+        cur.execute("""SELECT count(*) FROM evento_acceso e JOIN usuario u ON u.id = e.usuario_id
+                       WHERE e.simulado AND NOT u.simulado AND NOT EXISTS (
+                         SELECT 1 FROM pago p WHERE p.usuario_id = u.id AND p.simulado)""")
+        chequeo("eventos simulados de usuarios reales solo en historial demo (con pagos simulados)", cur.fetchone()[0] == 0)
+        verificar_demo(cur, chequeo)
         cur.execute("SELECT count(*) FROM usuario WHERE simulado AND telefono !~ '^30[0-9]{8}$'")
         chequeo("telefonos simulados con formato ficticio", cur.fetchone()[0] == 0)
 

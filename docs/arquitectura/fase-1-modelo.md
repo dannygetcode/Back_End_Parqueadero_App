@@ -549,7 +549,7 @@ estado (`ACTIVO`, `VENCIDO` o `SUSPENDIDO`); para reasignarlo hay que dar de baj
 | POST | `/api/pagos` | U | multipart `comprobante` (JPEG/PNG, máx. 5 MB) | 201 `PagoDTO` (409 si ya hay uno pendiente o el comprobante está duplicado) |
 | POST | `/api/pagos/manual` | A | multipart `{usuarioId, montoConfirmado, observacion, comprobante?}` | 201 `PagoDTO` creado ya APROBADO. En Fase 1 **solo cortesías**: `montoConfirmado = 0` y `observacion` obligatoria (otro monto → 400; el efectivo queda para otra fase) |
 | GET | `/api/pagos?estado=&usuarioId=&desde=&hasta=&page=&size=` | A | — | `Page<PagoDTO>` |
-| GET | `/api/pagos/mios` | U | — | `List<PagoDTO>` |
+| GET | `/api/pagos/mios` | U | — | `List<PagoDTO>` (incluye historial simulado propio) |
 | GET | `/api/pagos/{id}` | A, U dueño | — | `PagoDTO` |
 | GET | `/api/pagos/{id}/comprobante` | A, U dueño | — | binario `image/*`, `Cache-Control: private, no-store` |
 | PUT | `/api/pagos/{id}/aprobar` | A | `AprobacionPagoDTO {montoConfirmado, observacion?}` | `PagoDTO` |
@@ -570,7 +570,7 @@ que el día de inicio no exista en el mes siguiente (31-ene → 28/29-feb, 31-ma
 |---|---|---|---|---|
 | POST | `/api/accesos/lecturas` | S, A | `LecturaPlacaDTO {placa, camaraId?, ocurridoEn?, tipo? (solo A)}` — sin `simulado` en Fase 1 (el generador F2 escribe directo en BD); `tipo` desde S → 400 | `EventoAccesoDTO` (200 si se permite, 403 con el cuerpo si se deniega) |
 | GET | `/api/accesos?desde=&hasta=&placa=&resultado=&page=&size=` | A | — | `Page<EventoAccesoDTO>` |
-| GET | `/api/accesos/mios` | U | — | `List<EventoAccesoDTO>` (últimos 30 días) |
+| GET | `/api/accesos/mios` | U | — | `List<EventoAccesoDTO>` (`?dias=` 1 a 365, 30 por defecto; incluye historial simulado propio) |
 | GET | `/api/accesos/ocupacion` | A | — | `OcupacionDTO {porTipo: [{tipoVehiculo, cupos, ocupados, libres}], vehiculosDentro: [{placa, usuario, desde}]}` |
 | GET | `/api/puerta` | A, U | — | `PuertaDTO {abierta, abiertaHasta, ultimoEvento?}`; para U, `ultimoEvento` solo si es suyo |
 | PUT | `/api/puerta` | A, U | `PuertaComandoDTO {abierta, placa? (obligatoria para A si abierta=true), tipo? (A), observacion? (A)}` | `PuertaDTO {..., evento}` (403 si se deniega). La apertura del **admin** siempre queda PERMITIDA: si las reglas la denegarían (o la placa es desconocida) se registra con `FORZADO_ADMIN` y `observacion` es obligatoria (si falta → 400) |
@@ -617,7 +617,7 @@ V4 (`evento_acceso(ocurrido_en)`). Contrato completo en `docs/contrato-analitica
 | `codigo-validacion.horas` | — | `72` | |
 | `usuarios.vencimiento.dias-gracia` / `.cron` | — | `5` / `0 5 0 * * *` | Zona `America/Bogota` |
 | `accesos.antirrebote-segundos` / `.apertura-segundos` / `.desfase-maximo-minutos` | — | `60` / `10` / `5` | |
-| `legal.aviso-privacidad.version` | — | `2026-10` | Versión del aviso servido en `/api/legal/aviso-privacidad` |
+| `legal.aviso-privacidad.version` | — | `2026-10-14` | Versión del aviso servido en `/api/legal/aviso-privacidad` |
 | `spring.servlet.multipart.max-file-size` | — | `5MB` | |
 | `spring.jpa.hibernate.ddl-auto` | — | `validate` | ADR 0001 |
 | `spring.flyway.enabled` | — | `true` | |

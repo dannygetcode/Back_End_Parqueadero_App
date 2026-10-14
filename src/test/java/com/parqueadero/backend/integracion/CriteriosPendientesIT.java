@@ -98,6 +98,6 @@ class CriteriosPendientesIT extends PruebaIntegracion {
     private ResultActions activarCon(String telefono, String codigo, String pin) throws Exception {
         return mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                 .content(cuerpo(Map.of("telefono", telefono, "codigo", codigo, "pin", pin,
-                        "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))));
+                        "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))));
     }
 }

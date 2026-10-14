@@ -56,8 +56,9 @@ public class AccesoController {
     }
 
     @GetMapping("/mios")
-    public List<EventoAccesoDTO> mios(@AuthenticationPrincipal UsuarioAutenticado yo) {
-        return service.mios(yo.id());
+    public List<EventoAccesoDTO> mios(@AuthenticationPrincipal UsuarioAutenticado yo,
+                                    @RequestParam(defaultValue = "30") int dias) {
+        return service.mios(yo.id(), dias);
     }
 
     @GetMapping("/ocupacion")

@@ -18,7 +18,7 @@ public class LegalServiceImpl implements LegalService {
 
     private final AvisoPrivacidadDTO aviso;
 
-    public LegalServiceImpl(@Value("${legal.aviso-privacidad.version:2026-10}") String version) {
+    public LegalServiceImpl(@Value("${legal.aviso-privacidad.version:2026-10-14}") String version) {
         ClassPathResource recurso = new ClassPathResource("legal/aviso-privacidad-" + version + ".txt");
         try {
             this.aviso = new AvisoPrivacidadDTO(version, recurso.getContentAsString(StandardCharsets.UTF_8));

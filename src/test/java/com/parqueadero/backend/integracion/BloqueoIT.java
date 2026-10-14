@@ -137,7 +137,7 @@ class BloqueoIT extends PruebaIntegracion {
         for (int i = 0; i < 2; i++) {
             mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                             .content(cuerpo(Map.of("telefono", telefono, "codigo", "XXXXXXXX", "pin", PIN,
-                                    "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))))
+                                    "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))))
                     .andExpect(status().isUnauthorized());
         }
         loginUsuario(telefono, PIN).andExpect(status().isLocked());
@@ -169,7 +169,7 @@ class BloqueoIT extends PruebaIntegracion {
     private org.springframework.test.web.servlet.ResultActions activarCon(UsuarioPrueba u, String codigo) throws Exception {
         return mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                 .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", codigo, "pin", PIN,
-                        "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))));
+                        "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))));
     }
 
     private org.springframework.test.web.servlet.ResultActions loginAdmin(String usuario, String password) throws Exception {

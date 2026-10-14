@@ -73,3 +73,42 @@ def test_plan_coherente():
         for a, b in zip(ap, ap[1:]):
             assert b.periodo_inicio == a.periodo_fin + timedelta(days=1)
         assert all(x.monto == nucleo.tarifa_vigente(TARIFAS, u.tipo, x.periodo_inicio)["valor"] for x in u.pagos)
+
+
+# ---------- historial demo ----------
+def test_periodos_hacia_atras_continuos_y_terminan_antes_del_real():
+    real = date(2026, 10, 14)
+    ps = nucleo.periodos_hacia_atras(real, 12)
+    assert len(ps) == 12 and ps[-1][1] == real - timedelta(days=1)
+    assert ps[0][0] == date(2025, 10, 14)
+    for (_, fin), (ini, _) in zip(ps, ps[1:]):
+        assert ini == fin + timedelta(days=1)
+    # dia 31: los limites se ajustan pero siguen sin hueco ni solape
+    ps = nucleo.periodos_hacia_atras(date(2026, 3, 31), 6)
+    assert all(b[0] == a[1] + timedelta(days=1) for a, b in zip(ps, ps[1:]))
+
+
+def test_tarifa_por_fecha_en_el_cambio_de_anio():
+    assert nucleo.tarifa_vigente(TARIFAS, "CARRO", date(2025, 12, 31))["valor"] == 64000
+    assert nucleo.tarifa_vigente(TARIFAS, "CARRO", date(2026, 1, 1))["valor"] == 80000
+    ps = nucleo.periodos_hacia_atras(date(2026, 10, 14), 12)
+    pagos = nucleo.pagos_demo(random.Random(1), ps, "CARRO", TARIFAS, AHORA)
+    for p in pagos:
+        assert p.monto == (80000 if p.periodo_inicio >= date(2026, 1, 1) else 64000)
+    ap = [p for p in pagos if p.estado == "APROBADO"]
+    assert len(ap) == 12 and sum(p.estado == "RECHAZADO" for p in pagos) == 1
+    assert all(p.creado_en <= AHORA and p.ruta is None for p in pagos)
+
+
+def test_eventos_demo_alternan_y_cierran_en_salida_antes_del_tope():
+    tope = datetime(2026, 10, 14, 10, 0, tzinfo=nucleo.TZ)
+    evs = nucleo.eventos_demo(random.Random(3), date(2025, 10, 14), tope, "ZZZ999")
+    assert evs and evs[-1].tipo == "SALIDA" and evs[-1].ocurrido_en < tope
+    assert nucleo.alternancia_valida([(e.tipo, e.ocurrido_en) for e in evs])
+    assert evs == nucleo.eventos_demo(random.Random(3), date(2025, 10, 14), tope, "ZZZ999")  # determinista
+
+
+def test_cerrar_en_salida_quita_entrada_final():
+    t = datetime(2026, 1, 1, tzinfo=nucleo.TZ)
+    ev = [("ENTRADA", t), ("SALIDA", t + timedelta(hours=1)), ("ENTRADA", t + timedelta(hours=2))]
+    assert nucleo.cerrar_en_salida(ev) == ev[:2]

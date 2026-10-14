@@ -372,3 +372,59 @@ def planificar(semilla: int, meses: int, hasta: date, tarifas: list[dict], cupos
                                            "DENEGADO", "PLACA_DESCONOCIDA", t))
     desconocidos.sort(key=lambda e: e.ocurrido_en)
     return Plan(inicio, hasta, usuarios, desconocidos)
+
+
+# ---------- historial de un usuario real (demo) ----------
+def periodos_hacia_atras(inicio_real: date, n: int) -> list[tuple[date, date]]:
+    """n periodos mensuales contiguos que terminan el dia anterior a inicio_real (orden ascendente)."""
+    res = []
+    for k in range(n, 0, -1):
+        res.append((add_months(inicio_real, -k), add_months(inicio_real, -k + 1) - timedelta(days=1)))
+    return res
+
+
+def pagos_demo(rng, periodos, tipo: str, tarifas: list[dict], ahora: datetime) -> list[PagoPlan]:
+    """Pagos aprobados por periodo (tarifa vigente al inicio), 2-3 tardios de 1-6 dias y 1 rechazo con reenvio."""
+    n = len(periodos)
+    tardios = set(rng.sample(range(1, n), min(rng.randint(2, 3), n - 1))) if n > 1 else set()
+    rechazado = rng.choice([i for i in range(1, n) if i not in tardios] or [0]) if n else None
+    pagos = []
+    for i, (ini, fin) in enumerate(periodos):
+        monto = tarifa_vigente(tarifas, tipo, ini)["valor"]
+        delay = rng.randint(1, 6) if i in tardios else -rng.randint(0, 3)
+        creado = a_dt(ini + timedelta(days=delay), rng.uniform(8, 21.9))
+        if i == rechazado:
+            rev = creado + timedelta(hours=rng.uniform(1, 20))
+            pagos.append(PagoPlan(ini, fin, tipo, monto, "RECHAZADO", creado, rev, "PARCIAL",
+                                  monto - rng.choice([1000, 2000, 5000]), None,
+                                  "El monto del comprobante no coincide con la tarifa", None, None))
+            creado = creado + timedelta(days=rng.randint(1, 2), hours=rng.uniform(-2, 2))
+        creado = min(creado, ahora - timedelta(hours=2))
+        rev = min(creado + timedelta(hours=rng.uniform(1, 20)), ahora)
+        ocr = rng.choices(["EXITOSO", "PARCIAL", "FALLIDO"], [0.83, 0.12, 0.05])[0]
+        pagos.append(PagoPlan(ini, fin, tipo, monto, "APROBADO", creado, rev, ocr,
+                              monto if ocr in ("EXITOSO", "PARCIAL") else None,
+                              creado.date() if ocr == "EXITOSO" else None, None, None, None))
+    return pagos
+
+
+def cerrar_en_salida(eventos: list[tuple[str, datetime]]) -> list[tuple[str, datetime]]:
+    """Descarta una ENTRADA final sin SALIDA para que el historial termine con el vehiculo afuera."""
+    ev = list(eventos)
+    while ev and ev[-1][0] == "ENTRADA":
+        ev.pop()
+    return ev
+
+
+def eventos_demo(rng, d_ini: date, tope: datetime, placa: str) -> list[EventoPlan]:
+    """Visitas de perfil oficina con ruido y vacaciones; ultimo evento = SALIDA estrictamente anterior a tope."""
+    dias = (tope.date() - d_ini).days
+    vacs = []
+    if dias > 120:
+        for _ in range(rng.randint(1, 2)):
+            ini = d_ini + timedelta(days=rng.randint(30, dias - 20))
+            vacs.append((ini, ini + timedelta(days=rng.randint(7, 14))))
+    visitas = generar_visitas(rng, "oficina", d_ini, tope.date(), vacs)
+    corte = tope - timedelta(minutes=1)
+    evs = cerrar_en_salida(eventos_desde_visitas(visitas, corte))
+    return [EventoPlan(placa, t, "PERMITIDO", None, o) for t, o in evs]
