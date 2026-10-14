@@ -56,13 +56,13 @@ class UsuarioFlujoIT extends PruebaIntegracion {
                         + "FROM usuario WHERE id = ?", u.id());
         assertThat((String) fila.get("pin_hash")).startsWith("$2").doesNotContain(PIN);
         assertThat(fila.get("codigo_validacion_hash")).isNull();
-        assertThat(fila.get("consentimiento_version")).isEqualTo("2026-10");
+        assertThat(fila.get("consentimiento_version")).isEqualTo("2026-10-14");
         assertThat(fila.get("consentimiento_datos_en")).isNotNull();
 
         // El código es de un solo uso.
         mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", u.codigo(), "pin", "739104",
-                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))))
+                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -97,23 +97,23 @@ class UsuarioFlujoIT extends PruebaIntegracion {
         // PIN trivial -> 400
         mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", u.codigo(), "pin", "123456",
-                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))))
+                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))))
                 .andExpect(status().isBadRequest());
         // PIN de 4 dígitos -> 400
         mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", u.codigo(), "pin", "4829",
-                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))))
+                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errores[0].campo").value("pin"));
         // Sin consentimiento -> 400
         mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", u.codigo(), "pin", PIN,
-                                "aceptaTratamientoDatos", false, "versionConsentimiento", "2026-10"))))
+                                "aceptaTratamientoDatos", false, "versionConsentimiento", "2026-10-14"))))
                 .andExpect(status().isBadRequest());
         // Código equivocado -> 401 genérico
         mvc.perform(post("/api/auth/activar").contentType(MediaType.APPLICATION_JSON)
                         .content(cuerpo(Map.of("telefono", u.telefono(), "codigo", "ZZZZZZZZ", "pin", PIN,
-                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10"))))
+                                "aceptaTratamientoDatos", true, "versionConsentimiento", "2026-10-14"))))
                 .andExpect(status().isUnauthorized());
     }
 
