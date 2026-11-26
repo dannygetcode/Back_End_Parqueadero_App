@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1290" height="660" viewBox="0 0 1290 660">
+<defs>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1 L11,6 L1,11" fill="none" stroke="#111111" stroke-width="1.4"/></marker>
+<marker id="filled" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1.5 L11,6 L1,10.5 Z" fill="#111111"/></marker>
+<marker id="hollow" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1 L15,8 L1,15 Z" fill="#fff" stroke="#111111" stroke-width="1.3"/></marker>
+<marker id="diamond" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="20" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,6 L10,1 L19,6 L10,11 Z" fill="#111111"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<rect x="20" y="20" width="380" height="250" rx="0" fill="#fff" stroke="#555" stroke-width="1.2"/>
+<rect x="20" y="20" width="380" height="30" rx="0" fill="#F2F2F2" stroke="#555" stroke-width="1.2"/>
+<text x="30" y="40" font-family="'Liberation Serif','Times New Roman',serif" font-size="14.5" fill="#111111"><tspan font-weight="bold">1 · Petición</tspan><tspan font-style="italic"> (cliente)</tspan></text>
+<rect x="32" y="64" width="356" height="99" rx="0" fill="#FAFAFA" stroke="#BBBBBB" stroke-width="1"/>
+<text x="40.0" y="83.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">POST /api/pagos</text>
+<text x="40.0" y="100.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">Authorization: Bearer eyJhbGciOi...</text>
+<text x="40.0" y="117.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111"></text>
+<text x="40.0" y="134.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">POST /api/accesos/lecturas</text>
+<text x="40.0" y="151.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">X-Api-Key: &lt;clave del simulador&gt;</text>
+<text x="32.0" y="200.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">La app y el panel usan JWT. El simulador</text>
+<text x="32.0" y="218.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">de cámara usa una clave de API.</text>
+<rect x="455" y="20" width="380" height="250" rx="0" fill="#fff" stroke="#1F3A5F" stroke-width="2.2"/>
+<rect x="455" y="20" width="380" height="30" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="2.2"/>
+<text x="465" y="40" font-family="'Liberation Serif','Times New Roman',serif" font-size="14.5" fill="#111111"><tspan font-weight="bold">2 · LimitePorIpFilter</tspan><tspan font-style="italic"> (seguridad)</tspan></text>
+<text x="469.0" y="78.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ Solo en /api/admin/login, /api/auth/login</text>
+<text x="469.0" y="96.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">   y /api/auth/activar</text>
+<text x="469.0" y="114.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ 10 peticiones por IP y ruta en 60 s</text>
+<text x="469.0" y="132.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">   (ventana deslizante en memoria)</text>
+<text x="469.0" y="150.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ Detrás de un proxy usa la cabecera de</text>
+<text x="469.0" y="168.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">   LIMITE_IP_CABECERA</text>
+<text x="469.0" y="220.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111" font-style="italic">Si se pasa: 429 con Retry-After, sin</text>
+<text x="469.0" y="238.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111" font-style="italic">comprobar la credencial.</text>
+<rect x="890" y="20" width="380" height="250" rx="0" fill="#fff" stroke="#1F3A5F" stroke-width="2.2"/>
+<rect x="890" y="20" width="380" height="30" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="2.2"/>
+<text x="900" y="40" font-family="'Liberation Serif','Times New Roman',serif" font-size="14.5" fill="#111111"><tspan font-weight="bold">3 · ApiKeyAuthenticationFilter</tspan><tspan font-style="italic"> (seguridad)</tspan></text>
+<text x="904.0" y="78.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ Compara X-Api-Key con CAMARA_API_KEY</text>
+<text x="904.0" y="96.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">   en tiempo constante (MessageDigest)</text>
+<text x="904.0" y="114.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ Si coincide: ROLE_SISTEMA</text>
+<text x="904.0" y="132.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ SISTEMA solo puede llamar a</text>
+<text x="904.0" y="150.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">   POST /api/accesos/lecturas</text>
+<text x="904.0" y="220.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111" font-style="italic">Sin CAMARA_API_KEY no autentica a nadie</text>
+<text x="904.0" y="238.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111" font-style="italic">(falla cerrado).</text>
+<rect x="890" y="350" width="380" height="250" rx="0" fill="#fff" stroke="#1F3A5F" stroke-width="2.2"/>
+<rect x="890" y="350" width="380" height="30" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="2.2"/>
+<text x="900" y="370" font-family="'Liberation Serif','Times New Roman',serif" font-size="14.5" fill="#111111"><tspan font-weight="bold">4 · JwtAuthenticationFilter</tspan><tspan font-style="italic"> (seguridad)</tspan></text>
+<rect x="902" y="394" width="356" height="48" rx="0" fill="#FAFAFA" stroke="#BBBBBB" stroke-width="1"/>
+<text x="910.0" y="413.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">{ "sub": "25", "rol": "USUARIO",</text>
+<text x="910.0" y="430.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">  "iat": ..., "exp": ... }</text>
+<text x="904.0" y="468.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ Firma HS256 con JWT_SECRET (32+ bytes)</text>
+<text x="904.0" y="486.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ Principal = sub, autoridad = ROLE_&lt;rol&gt;</text>
+<text x="904.0" y="504.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ 401 si iat es anterior a</text>
+<text x="904.0" y="522.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">   credenciales_cambiadas_en (token revocado)</text>
+<text x="904.0" y="555.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111" font-style="italic">Vigencia: admin 4 h, usuario 12 h.</text>
+<rect x="455" y="350" width="380" height="250" rx="0" fill="#fff" stroke="#1F3A5F" stroke-width="2.2"/>
+<rect x="455" y="350" width="380" height="30" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="2.2"/>
+<text x="465" y="370" font-family="'Liberation Serif','Times New Roman',serif" font-size="14.5" fill="#111111"><tspan font-weight="bold">5 · Reglas por ruta</tspan><tspan font-style="italic"> (SecurityConfig)</tspan></text>
+<text x="469.0" y="406.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="bold" text-anchor="start" fill="#111111">Ruta</text>
+<text x="705.0" y="406.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="bold" text-anchor="start" fill="#111111">Rol</text>
+<polyline points="467,413 823,413" fill="none" stroke="#111111" stroke-width="1"/>
+<text x="469.0" y="432.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">/api/usuarios/yo/**</text>
+<text x="705.0" y="432.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">USUARIO</text>
+<text x="469.0" y="451.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">/api/usuarios/**</text>
+<text x="705.0" y="451.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">ADMIN</text>
+<text x="469.0" y="470.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">POST /api/pagos</text>
+<text x="705.0" y="470.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">USUARIO</text>
+<text x="469.0" y="489.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">/api/pagos/{id}</text>
+<text x="705.0" y="489.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">ADMIN o dueño</text>
+<text x="469.0" y="508.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">/api/puerta</text>
+<text x="705.0" y="508.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">ADMIN, USUARIO</text>
+<text x="469.0" y="527.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">/api/analitica/**</text>
+<text x="705.0" y="527.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">ADMIN</text>
+<text x="469.0" y="546.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">POST /api/accesos/lecturas</text>
+<text x="705.0" y="546.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">SISTEMA, ADMIN</text>
+<text x="469.0" y="578.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111" font-style="italic">Rol sin permiso: 403.</text>
+<rect x="20" y="350" width="380" height="250" rx="0" fill="#fff" stroke="#1F3A5F" stroke-width="2.2"/>
+<rect x="20" y="350" width="380" height="30" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="2.2"/>
+<text x="30" y="370" font-family="'Liberation Serif','Times New Roman',serif" font-size="14.5" fill="#111111"><tspan font-weight="bold">6 · Controlador y servicio</tspan><tspan font-style="italic"> (negocio)</tspan></text>
+<rect x="32" y="394" width="356" height="48" rx="0" fill="#FAFAFA" stroke="#BBBBBB" stroke-width="1"/>
+<text x="40.0" y="413.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">@AuthenticationPrincipal</text>
+<text x="40.0" y="430.0" font-family="Consolas,'Liberation Mono','Courier New',monospace" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111111">UsuarioAutenticado yo</text>
+<text x="34.0" y="468.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ El id sale del token, nunca de un parámetro</text>
+<text x="34.0" y="486.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ El usuario solo ve lo suyo (sin IDOR)</text>
+<text x="34.0" y="504.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">✓ Las operaciones sensibles releen la fila</text>
+<text x="34.0" y="522.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">   y rechazan SUSPENDIDO, baja o bloqueo</text>
+<text x="34.0" y="555.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111" font-style="italic">5 PIN fallidos: 423 durante 15 min.</text>
+<polyline points="400,145.0 455,145.0" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<polyline points="835,145.0 890,145.0" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<polyline points="1080.0,270 1080.0,350" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<polyline points="890,475.0 835,475.0" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<polyline points="455,475.0 400,475.0" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<text x="645.0" y="625.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#444">Borde azul grueso: backend · Borde gris: cliente · Flecha continua: orden en que la petición atraviesa los filtros</text>
+</svg>
