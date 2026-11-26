@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1500" height="760" viewBox="0 0 1500 760">
+<defs>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1 L11,6 L1,11" fill="none" stroke="#111111" stroke-width="1.4"/></marker>
+<marker id="filled" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1.5 L11,6 L1,10.5 Z" fill="#111111"/></marker>
+<marker id="hollow" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1 L15,8 L1,15 Z" fill="#fff" stroke="#111111" stroke-width="1.3"/></marker>
+<marker id="diamond" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="20" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,6 L10,1 L19,6 L10,11 Z" fill="#111111"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<path d="M30,70 L46,54 H316 V174 L300,190" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<path d="M300,70 L316,54" stroke="#111111" stroke-width="1.4"/>
+<rect x="30" y="70" width="270" height="120" rx="0" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="165.0" y="92.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«device»</text>
+<text x="165.0" y="111.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">Teléfono Android</text>
+<text x="165.0" y="150.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">App móvil (Kotlin)</text>
+<path d="M30,250 L46,234 H316 V354 L300,370" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<path d="M300,250 L316,234" stroke="#111111" stroke-width="1.4"/>
+<rect x="30" y="250" width="270" height="120" rx="0" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="165.0" y="272.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«device»</text>
+<text x="165.0" y="291.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">Navegador</text>
+<text x="165.0" y="330.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">Panel web del admin</text>
+<rect x="30" y="430" width="270" height="90" rx="0" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="165.0" y="460.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«process»</text>
+<text x="165.0" y="479.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">Simulador de cámara</text>
+<text x="165.0" y="498.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">cliente HTTP con X-Api-Key</text>
+<rect x="30" y="600" width="270" height="100" rx="0" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="165.0" y="625.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«process»</text>
+<text x="165.0" y="644.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">Simulador de datos</text>
+<text x="165.0" y="663.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">Python, generar.py</text>
+<text x="165.0" y="682.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">escribe simulado=true</text>
+<rect x="355" y="250" width="200" height="110" fill="#fff" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4"/>
+<text x="455.0" y="275.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«proxy inverso»</text>
+<text x="455.0" y="296.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">nginx o Caddy</text>
+<text x="455.0" y="318.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">termina TLS</text>
+<text x="455.0" y="338.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111" font-style="italic">(recomendado en producción)</text>
+<path d="M620,50 L636,34 H1486 V714 L1470,730" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<path d="M1470,50 L1486,34" stroke="#111111" stroke-width="1.4"/>
+<rect x="620" y="50" width="850" height="680" rx="0" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="1045.0" y="72.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«device»</text>
+<text x="1045.0" y="91.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">Host con Docker</text>
+<rect x="640" y="110" width="810" height="600" rx="0" fill="#fff" stroke="#111111" stroke-width="1.2"/>
+<text x="1045.0" y="132.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#111111">«execution environment»  docker compose  (red interna)</text>
+<rect x="670" y="160" width="330" height="110" rx="0" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="835.0" y="190.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«container»</text>
+<text x="835.0" y="209.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">backend</text>
+<text x="835.0" y="228.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">Spring Boot 3.5, Java 17</text>
+<text x="835.0" y="247.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">publica 127.0.0.1:8080</text>
+<rect x="1090" y="160" width="330" height="90" rx="0" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="1255.0" y="190.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«container»</text>
+<text x="1255.0" y="209.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">ocr</text>
+<text x="1255.0" y="228.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">Flask + Tesseract, :5000</text>
+<rect x="1090" y="320" width="330" height="110" rx="0" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="1255.0" y="350.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«container»</text>
+<text x="1255.0" y="369.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">pronostico</text>
+<text x="1255.0" y="388.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">FastAPI, :8000, sin puertos</text>
+<text x="1255.0" y="407.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">read_only, cap_drop ALL</text>
+<path d="M720,367 V468 A115.0,12 0 0 0 950,468 V367" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<ellipse cx="835.0" cy="367" rx="115.0" ry="12" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<text x="835.0" y="410.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«database»</text>
+<text x="835.0" y="429.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">db</text>
+<text x="835.0" y="448.7" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">postgres:15</text>
+<path d="M670,560 H874 L890,576 V640 H670 Z" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<path d="M874,560 V576 H890" fill="none" stroke="#111111" stroke-width="1.2"/>
+<text x="780.0" y="585.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«volume»</text>
+<text x="780.0" y="604.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">uploads</text>
+<text x="780.0" y="623.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">comprobantes</text>
+<path d="M920,560 H1154 L1170,576 V640 H920 Z" fill="#fff" stroke="#111111" stroke-width="1.4"/>
+<path d="M1154,560 V576 H1170" fill="none" stroke="#111111" stroke-width="1.2"/>
+<text x="1045.0" y="585.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111">«volume»</text>
+<text x="1045.0" y="604.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#111111">backend_pgdata</text>
+<text x="1045.0" y="623.2" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">externo: sobrevive a down -v</text>
+<polyline points="1000,205 1090,205" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1045.0" y="197.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#111111">HTTP</text>
+<polyline points="1000,250 1045,250 1045,375 1090,375" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1050.0" y="315.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">HTTP</text>
+<polyline points="835,270 835,355" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="841.0" y="320.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="start" fill="#111111">JDBC</text>
+<polyline points="1090,410 950,410" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1020.0" y="402.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#111111">SELECT</text>
+<polyline points="700,270 700,560" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#open)"/>
+<polyline points="835,480 835,520 1045,520 1045,560" fill="none" stroke="#111111" stroke-width="1.3"/>
+<text x="940.0" y="512.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#111111">datos</text>
+<polyline points="300,130 328,130 328,290 355,290" fill="none" stroke="#111111" stroke-width="1.3"/>
+<polyline points="300,310 355,310" fill="none" stroke="#111111" stroke-width="1.3"/>
+<text x="328.0" y="395.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#111111">HTTPS</text>
+<polyline points="555,300 645,300 645,215 670,215" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="600.0" y="292.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#111111">HTTP</text>
+<polyline points="300,475 655,475 655,240 670,240" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="470.0" y="467.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#111111">HTTP + X-Api-Key</text>
+<polyline points="300,650 610,650 610,440 720,440" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="455.0" y="642.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13" font-weight="normal" text-anchor="middle" fill="#111111">127.0.0.1:5432</text>
+<text x="455.0" y="672.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111111" font-style="italic">solo con compose.publicar-bd.yml</text>
+</svg>

@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1740" height="1021" viewBox="0 0 1740 1021">
+<defs>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1 L11,6 L1,11" fill="none" stroke="#111111" stroke-width="1.4"/></marker>
+<marker id="filled" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1.5 L11,6 L1,10.5 Z" fill="#111111"/></marker>
+<marker id="hollow" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1 L15,8 L1,15 Z" fill="#fff" stroke="#111111" stroke-width="1.3"/></marker>
+<marker id="diamond" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="20" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,6 L10,1 L19,6 L10,11 Z" fill="#111111"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polyline points="60,144 60,1001" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="240,68 240,1001" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="470,68 470,1001" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="720,68 720,1001" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="1000,68 1000,1001" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="1250,68 1250,1001" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="1480,68 1480,1001" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="1670,144 1670,1001" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<circle cx="60" cy="26" r="12" fill="#fff" stroke="#111111" stroke-width="1.5"/>
+<polyline points="60,38 60,72" fill="none" stroke="#111111" stroke-width="1.5"/>
+<polyline points="38,50 82,50" fill="none" stroke="#111111" stroke-width="1.5"/>
+<polyline points="40,100 60,72 80,100" fill="none" stroke="#111111" stroke-width="1.5"/>
+<text x="60.0" y="120.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="normal" text-anchor="middle" fill="#111111">Usuario</text>
+<rect x="190.8" y="20" width="98.39999999999999" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="240.0" y="49.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">App móvil</text>
+<rect x="401.8" y="20" width="136.39999999999998" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="470.0" y="49.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">PagoController</text>
+<rect x="648.0" y="20" width="144.0" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="720.0" y="49.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">PagoServiceImpl</text>
+<rect x="912.8" y="20" width="174.4" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="1000.0" y="40.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">Servicio OCR</text>
+<text x="1000.0" y="58.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">(Flask + Tesseract)</text>
+<rect x="1162.8" y="20" width="174.4" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="1250.0" y="40.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">AlmacenComprobantes</text>
+<text x="1250.0" y="58.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">(volumen uploads)</text>
+<rect x="1427.0" y="20" width="106.0" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="1480.0" y="49.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">PostgreSQL</text>
+<circle cx="1670" cy="26" r="12" fill="#fff" stroke="#111111" stroke-width="1.5"/>
+<polyline points="1670,38 1670,72" fill="none" stroke="#111111" stroke-width="1.5"/>
+<polyline points="1648,50 1692,50" fill="none" stroke="#111111" stroke-width="1.5"/>
+<polyline points="1650,100 1670,72 1690,100" fill="none" stroke="#111111" stroke-width="1.5"/>
+<text x="1670.0" y="120.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="15" font-weight="normal" text-anchor="middle" fill="#111111">Administrador</text>
+<polyline points="60,170 239,170" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="49.1" y="151.5" width="201.8" height="17.5" fill="#fff"/>
+<text x="150.0" y="163.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">Elige la foto del comprobante</text>
+<circle cx="60" cy="170" r="10" fill="#262626"/>
+<text x="60.0" y="174.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">1</text>
+<polyline points="240,207 469,207" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="233.9" y="188.5" width="242.2" height="17.5" fill="#fff"/>
+<text x="355.0" y="200.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">POST /api/pagos (multipart, Bearer)</text>
+<circle cx="240" cy="207" r="10" fill="#262626"/>
+<text x="240.0" y="211.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">2</text>
+<polyline points="470,244 719,244" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="497.5" y="225.5" width="195.0" height="17.5" fill="#fff"/>
+<text x="595.0" y="237.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">crear(id del token, archivo)</text>
+<circle cx="470" cy="244" r="10" fill="#262626"/>
+<text x="470.0" y="248.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">3</text>
+<polyline points="720,281 760,281 760,299 722,299" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<text x="770.0" y="294.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">máx. 5 MB, JPEG o PNG por sus bytes, SHA-256</text>
+<circle cx="720" cy="281" r="10" fill="#262626"/>
+<text x="720.0" y="285.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">4</text>
+<polyline points="720,326 999,326" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="718.6" y="307.5" width="282.8" height="17.5" fill="#fff"/>
+<text x="860.0" y="319.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">POST /ocr (fuera de la transacción, 10 s)</text>
+<circle cx="720" cy="326" r="10" fill="#262626"/>
+<text x="720.0" y="330.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">5</text>
+<polyline points="1000,363 721,363" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="708.5" y="344.5" width="303.0" height="17.5" fill="#fff"/>
+<text x="860.0" y="356.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">monto y fecha, o error: ocr_estado = FALLIDO</text>
+<circle cx="1000" cy="363" r="10" fill="#262626"/>
+<text x="1000.0" y="367.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">6</text>
+<polyline points="720,400 1479,400" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="945.1" y="381.5" width="309.8" height="17.5" fill="#fff"/>
+<text x="1100.0" y="393.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">¿pago PENDIENTE o mismo SHA-256 no rechazado?</text>
+<circle cx="720" cy="400" r="10" fill="#262626"/>
+<text x="720.0" y="404.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">7</text>
+<text x="670.0" y="451.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">[ya existe]</text>
+<polyline points="720,489 471,489" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="500.9" y="470.5" width="188.2" height="17.5" fill="#fff"/>
+<text x="595.0" y="482.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">NegocioException: conflicto</text>
+<circle cx="720" cy="489" r="10" fill="#262626"/>
+<text x="720.0" y="493.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">8</text>
+<polyline points="470,526 241,526" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="311.5" y="507.5" width="87.0" height="17.5" fill="#fff"/>
+<text x="355.0" y="519.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">409 Conflict</text>
+<circle cx="470" cy="526" r="10" fill="#262626"/>
+<text x="470.0" y="530.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">9</text>
+<polyline points="600,555 1560,555" fill="none" stroke="#111111" stroke-width="1.1" stroke-dasharray="6 4"/>
+<text x="670.0" y="575.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">[se puede registrar]</text>
+<polyline points="720,607 1479,607" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="982.2" y="588.5" width="235.5" height="17.5" fill="#fff"/>
+<text x="1100.0" y="600.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">periodo siguiente y tarifa vigente</text>
+<circle cx="720" cy="607" r="10" fill="#262626"/>
+<text x="720.0" y="611.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">10</text>
+<polyline points="720,644 1249,644" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="860.5" y="625.5" width="249.0" height="17.5" fill="#fff"/>
+<text x="985.0" y="637.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">guarda comprobantes/aaaa/mm/uuid.ext</text>
+<circle cx="720" cy="644" r="10" fill="#262626"/>
+<text x="720.0" y="648.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">11</text>
+<polyline points="720,681 1479,681" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="1026.1" y="662.5" width="147.8" height="17.5" fill="#fff"/>
+<text x="1100.0" y="674.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">INSERT pago PENDIENTE</text>
+<circle cx="720" cy="681" r="10" fill="#262626"/>
+<text x="720.0" y="685.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">12</text>
+<polyline points="720,718 471,718" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="568.4" y="699.5" width="53.2" height="17.5" fill="#fff"/>
+<text x="595.0" y="711.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">PagoDTO</text>
+<circle cx="720" cy="718" r="10" fill="#262626"/>
+<text x="720.0" y="722.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">13</text>
+<polyline points="470,755 241,755" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="308.1" y="736.5" width="93.8" height="17.5" fill="#fff"/>
+<text x="355.0" y="748.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">201 PENDIENTE</text>
+<circle cx="470" cy="755" r="10" fill="#262626"/>
+<text x="470.0" y="759.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">14</text>
+<rect x="600" y="431" width="960" height="351" fill="none" stroke="#111111" stroke-width="1.2"/>
+<path d="M600,431 H650 V445 L642,453 H600 Z" fill="#E8EEF6" stroke="#111111" stroke-width="1.2"/>
+<text x="608.0" y="447.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="bold" text-anchor="start" fill="#111111">alt</text>
+<polyline points="1670,806 471,806" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="908.4" y="787.5" width="323.2" height="17.5" fill="#fff"/>
+<text x="1070.0" y="799.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">PUT /api/pagos/{id}/aprobar { montoConfirmado }</text>
+<circle cx="1670" cy="806" r="10" fill="#262626"/>
+<text x="1670.0" y="810.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">15</text>
+<polyline points="470,843 719,843" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="538.0" y="824.5" width="114.0" height="17.5" fill="#fff"/>
+<text x="595.0" y="836.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">aprobar(id, dto)</text>
+<circle cx="470" cy="843" r="10" fill="#262626"/>
+<text x="470.0" y="847.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">16</text>
+<polyline points="720,880 1479,880" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="948.5" y="861.5" width="303.0" height="17.5" fill="#fff"/>
+<text x="1100.0" y="873.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">UPDATE pago: APROBADO, periodo y revisado_en</text>
+<circle cx="720" cy="880" r="10" fill="#262626"/>
+<text x="720.0" y="884.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">17</text>
+<polyline points="720,917 1479,917" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="938.4" y="898.5" width="323.2" height="17.5" fill="#fff"/>
+<text x="1100.0" y="910.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">recalcula estado: ACTIVO si hay periodo vigente</text>
+<circle cx="720" cy="917" r="10" fill="#262626"/>
+<text x="720.0" y="921.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">18</text>
+<polyline points="470,954 1669,954" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="1013.0" y="935.5" width="114.0" height="17.5" fill="#fff"/>
+<text x="1070.0" y="947.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">PagoDTO APROBADO</text>
+<circle cx="470" cy="954" r="10" fill="#262626"/>
+<text x="470.0" y="958.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">19</text>
+</svg>

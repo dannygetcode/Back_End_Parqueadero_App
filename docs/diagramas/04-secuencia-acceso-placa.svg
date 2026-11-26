@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="1520" height="1008" viewBox="0 0 1520 1008">
+<defs>
+<marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1 L11,6 L1,11" fill="none" stroke="#111111" stroke-width="1.4"/></marker>
+<marker id="filled" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1.5 L11,6 L1,10.5 Z" fill="#111111"/></marker>
+<marker id="hollow" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,1 L15,8 L1,15 Z" fill="#fff" stroke="#111111" stroke-width="1.3"/></marker>
+<marker id="diamond" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="20" markerHeight="12" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+<path d="M1,6 L10,1 L19,6 L10,11 Z" fill="#111111"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<polyline points="110,68 110,988" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="410,68 410,988" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="660,68 660,988" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="900,68 900,988" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<polyline points="1300,68 1300,988" fill="none" stroke="#1F3A5F" stroke-width="1.4"/>
+<rect x="38.0" y="20" width="144.0" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="110.0" y="40.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">Cámara simulada</text>
+<text x="110.0" y="58.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">(rol SISTEMA)</text>
+<rect x="357.0" y="20" width="106.0" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="410.0" y="40.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">Filtros de</text>
+<text x="410.0" y="58.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">seguridad</text>
+<rect x="584.2" y="20" width="151.6" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="660.0" y="49.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">AccesoController</text>
+<rect x="820.4" y="20" width="159.2" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="900.0" y="49.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">AccesoServiceImpl</text>
+<rect x="1224.2" y="20" width="151.6" height="48" rx="0" fill="#E8EEF6" stroke="#1F3A5F" stroke-width="1.3"/>
+<text x="1300.0" y="40.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">Repositorios JPA</text>
+<text x="1300.0" y="58.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="14" font-weight="normal" text-anchor="middle" fill="#111111">+ PostgreSQL</text>
+<polyline points="110,110 409,110" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="128.8" y="91.5" width="262.5" height="17.5" fill="#fff"/>
+<text x="260.0" y="103.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">POST /api/accesos/lecturas + X-Api-Key</text>
+<circle cx="110" cy="110" r="10" fill="#262626"/>
+<text x="110.0" y="114.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">1</text>
+<polyline points="410,147 450,147 450,165 412,165" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<text x="460.0" y="160.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">clave válida: ROLE_SISTEMA</text>
+<circle cx="410" cy="147" r="10" fill="#262626"/>
+<text x="410.0" y="151.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">2</text>
+<polyline points="410,192 659,192" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="413.9" y="173.5" width="242.2" height="17.5" fill="#fff"/>
+<text x="535.0" y="185.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">LecturaPlacaDTO { placa, camaraId }</text>
+<circle cx="410" cy="192" r="10" fill="#262626"/>
+<text x="410.0" y="196.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">3</text>
+<polyline points="660,229 899,229" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="658.9" y="210.5" width="242.2" height="17.5" fill="#fff"/>
+<text x="780.0" y="222.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">registrar(lectura, origen = CAMARA)</text>
+<circle cx="660" cy="229" r="10" fill="#262626"/>
+<text x="660.0" y="233.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">4</text>
+<polyline points="900,266 940,266 940,284 902,284" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<text x="950.0" y="279.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">normaliza la placa (mayúsculas, sin guiones)</text>
+<circle cx="900" cy="266" r="10" fill="#262626"/>
+<text x="900.0" y="270.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">5</text>
+<polyline points="900,311 1299,311" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="951.9" y="292.5" width="296.2" height="17.5" fill="#fff"/>
+<text x="1100.0" y="304.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">vehículo activo y no simulado con esa placa</text>
+<circle cx="900" cy="311" r="10" fill="#262626"/>
+<text x="900.0" y="315.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">6</text>
+<polyline points="1300,348 901,348" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="1043.0" y="329.5" width="114.0" height="17.5" fill="#fff"/>
+<text x="1100.0" y="341.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">vehículo o vacío</text>
+<circle cx="1300" cy="348" r="10" fill="#262626"/>
+<text x="1300.0" y="352.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">7</text>
+<polyline points="900,385 1299,385" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="1009.2" y="366.5" width="181.5" height="17.5" fill="#fff"/>
+<text x="1100.0" y="378.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">último evento del vehículo</text>
+<circle cx="900" cy="385" r="10" fill="#262626"/>
+<text x="900.0" y="389.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">8</text>
+<polyline points="1300,422 901,422" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="1049.8" y="403.5" width="100.5" height="17.5" fill="#fff"/>
+<text x="1100.0" y="415.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">evento o vacío</text>
+<circle cx="1300" cy="422" r="10" fill="#262626"/>
+<text x="1300.0" y="426.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">9</text>
+<text x="860.0" y="473.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">[placa desconocida]</text>
+<polyline points="900,511 1299,511" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="982.2" y="492.5" width="235.5" height="17.5" fill="#fff"/>
+<text x="1100.0" y="504.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">INSERT DENEGADO, PLACA_DESCONOCIDA</text>
+<circle cx="900" cy="511" r="10" fill="#262626"/>
+<text x="900.0" y="515.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">10</text>
+<polyline points="790,540 1490,540" fill="none" stroke="#111111" stroke-width="1.1" stroke-dasharray="6 4"/>
+<text x="860.0" y="560.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">[hubo un evento hace menos de 60 s]</text>
+<polyline points="900,592 940,592 940,610 902,610" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<text x="950.0" y="605.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">devuelve ese evento con duplicado = true</text>
+<circle cx="900" cy="592" r="10" fill="#262626"/>
+<text x="900.0" y="596.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">11</text>
+<polyline points="790,629 1490,629" fill="none" stroke="#111111" stroke-width="1.1" stroke-dasharray="6 4"/>
+<text x="860.0" y="649.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">[lectura nueva]</text>
+<polyline points="900,681 940,681 940,699 902,699" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<text x="950.0" y="694.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">infiere ENTRADA o SALIDA por el último PERMITIDO</text>
+<circle cx="900" cy="681" r="10" fill="#262626"/>
+<text x="900.0" y="685.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">12</text>
+<polyline points="900,726 940,726 940,744 902,744" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<text x="950.0" y="739.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">ENTRADA: exige ACTIVO, sin baja y cupo del tipo</text>
+<circle cx="900" cy="726" r="10" fill="#262626"/>
+<text x="900.0" y="730.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">13</text>
+<polyline points="900,771 940,771 940,789 902,789" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<text x="950.0" y="784.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="start" fill="#111111">SALIDA: siempre PERMITIDA</text>
+<circle cx="900" cy="771" r="10" fill="#262626"/>
+<text x="900.0" y="775.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">14</text>
+<polyline points="900,816 1299,816" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="962.0" y="797.5" width="276.0" height="17.5" fill="#fff"/>
+<text x="1100.0" y="809.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">INSERT evento_acceso (resultado, motivo)</text>
+<circle cx="900" cy="816" r="10" fill="#262626"/>
+<text x="900.0" y="820.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">15</text>
+<polyline points="900,853 1299,853" fill="none" stroke="#111111" stroke-width="1.3" marker-end="url(#filled)"/>
+<rect x="995.8" y="834.5" width="208.5" height="17.5" fill="#fff"/>
+<text x="1100.0" y="846.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">PERMITIDO: abre la puerta 10 s</text>
+<circle cx="900" cy="853" r="10" fill="#262626"/>
+<text x="900.0" y="857.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">16</text>
+<rect x="790" y="453" width="700" height="427" fill="none" stroke="#111111" stroke-width="1.2"/>
+<path d="M790,453 H840 V467 L832,475 H790 Z" fill="#E8EEF6" stroke="#111111" stroke-width="1.2"/>
+<text x="798.0" y="469.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="bold" text-anchor="start" fill="#111111">alt</text>
+<polyline points="900,904 661,904" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="726.4" y="885.5" width="107.2" height="17.5" fill="#fff"/>
+<text x="780.0" y="897.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">EventoAccesoDTO</text>
+<circle cx="900" cy="904" r="10" fill="#262626"/>
+<text x="900.0" y="908.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">17</text>
+<polyline points="660,941 111,941" fill="none" stroke="#111111" stroke-width="1.3" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<rect x="270.6" y="922.5" width="228.8" height="17.5" fill="#fff"/>
+<text x="385.0" y="934.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="13.5" font-weight="normal" text-anchor="middle" fill="#111111">200 si PERMITIDO, 403 si DENEGADO</text>
+<circle cx="660" cy="941" r="10" fill="#262626"/>
+<text x="660.0" y="945.0" font-family="'Liberation Serif','Times New Roman',Times,serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">18</text>
+</svg>
